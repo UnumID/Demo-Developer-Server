@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { Server } from 'http';
 import url from 'url';
 import axios from 'axios';
@@ -40,7 +39,7 @@ describe('Feathers application tests (with jest)', () => {
       try {
         await axios.get(getUrl('path/to/nowhere'), {
           headers: {
-            'Accept': 'text/html'
+            Accept: 'text/html'
           }
         });
       } catch (error) {
@@ -53,7 +52,7 @@ describe('Feathers application tests (with jest)', () => {
 
     it('shows a 404 JSON error without stack trace', async () => {
       expect.assertions(4);
-      
+
       try {
         await axios.get(getUrl('path/to/nowhere'));
       } catch (error) {
