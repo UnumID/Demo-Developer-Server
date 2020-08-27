@@ -24,12 +24,16 @@
     "yarn": ">= 0.18.0"
   },
   "scripts": {
-    "test": "yarn run compile && yarn run jest",
+    "test": "yarn run compile && NODE_ENV=test yarn migrate && NODE_ENV=test yarn run jest",
     "dev": "ts-node-dev --no-notify src/",
     "start": "yarn run compile && node lib/",
     "jest": "jest  --forceExit",
     "compile": "shx rm -rf lib/ && tsc",
-    "lint": "eslint \"src/**\" \"test/**\""
+    "lint": "eslint \"src/**\" \"test/**\"",
+    "migration:up": "yarn mikro-orm migration:up",
+    "migration:down": "yarn mikro-orm migration:down",
+    "migration:create": "yarn mikro-orm migration:create",
+    "migrate": "yarn migration:up"
   },
   "standard": {
     "env": [
@@ -48,6 +52,7 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "feathers-mikro-orm": "https://github.com/UnumID/feathers-mikro-orm.git",
     "helmet": "^3.21.2",
     "mikro-orm": "^3.6.15",
     "pg": "^8.3.3",
@@ -80,5 +85,12 @@
     "ts-node-dev": "^1.0.0-pre.61",
     "tslint": "^6.0.0",
     "typescript": "^3.7.5"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./build/mikro-orm.config.js"
+    ]
   }
 }
