@@ -49,7 +49,10 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "helmet": "^3.21.2",
+    "mikro-orm": "^3.6.15",
+    "pg": "^8.3.3",
     "serve-favicon": "^2.5.0",
+    "uuid": "^8.3.0",
     "winston": "^3.0.0"
   },
   "devDependencies": {
@@ -58,6 +61,7 @@
     "@types/helmet": "^0.0.48",
     "@types/jest": "^26.0.10",
     "@types/serve-favicon": "^2.5.0",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
     "@typescript-eslint/parser": "^3.10.1",
     "axios": "^0.20.0",

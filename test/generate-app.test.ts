@@ -2,20 +2,23 @@ import { Server } from 'http';
 import url from 'url';
 import axios from 'axios';
 
-import app from '../src/app';
-
-const port = app.get('port') || 8998;
-const getUrl = (pathname?: string) => url.format({
-  hostname: app.get('host') || 'localhost',
-  protocol: 'http',
-  port,
-  pathname
-});
+import generateApp from '../src/generate-app';
+import { Application } from '../src/declarations';
 
 describe('Feathers application tests (with jest)', () => {
   let server: Server;
+  let app: Application;
+  let getUrl;
 
-  beforeAll(done => {
+  beforeAll(async done => {
+    app = await generateApp();
+    const port = app.get('port') || 8998;
+    getUrl = (pathname?: string): string => url.format({
+      hostname: app.get('host') || 'localhost',
+      protocol: 'http',
+      port,
+      pathname
+    });
     server = app.listen(port);
     server.once('listening', () => done());
   });
