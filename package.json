@@ -52,6 +52,7 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "feathers-mikro-orm": "https://github.com/UnumID/feathers-mikro-orm.git",
     "helmet": "^3.21.2",
     "mikro-orm": "^3.6.15",
     "pg": "^8.3.3",

@@ -288,7 +288,16 @@
     is-absolute "^1.0.0"
     is-negated-glob "^1.0.0"
 
-"@feathersjs/commons@^4.5.8":
+"@feathersjs/adapter-commons@^4.3.11":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@feathersjs/adapter-commons/-/adapter-commons-4.5.2.tgz#10fdf4f6b305b313fb8b4dcc52838e3d89d57279"
+  integrity sha512-7NF4WO/R0OOZo6/mPnMml4Hz+Ynr0JMCp4TDO6JIf3ITAwc78A7b6jrORw1sw3Cq3hkD0sC342sk7mRk3BwPDg==
+  dependencies:
+    "@feathersjs/commons" "^4.5.2"
+    "@feathersjs/errors" "^4.5.2"
+    "@feathersjs/feathers" "^4.5.2"
+
+"@feathersjs/commons@^4.5.2", "@feathersjs/commons@^4.5.8":
   version "4.5.8"
   resolved "https://registry.yarnpkg.com/@feathersjs/commons/-/commons-4.5.8.tgz#12351a1796f707a9940e83e875ba414f8c15291d"
   integrity sha512-8HFQjJ5fkciLbvwWOsbtUvAIOFKMRIXLg+Ynm4HLjK2wHwpWtppkYxe3TfVbc254SYigmQ1c9kK0ERjrn6CqqQ==
@@ -302,7 +311,7 @@
     config "^3.3.1"
     debug "^4.1.1"
 
-"@feathersjs/errors@^4.5.1", "@feathersjs/errors@^4.5.8":
+"@feathersjs/errors@^4.3.11", "@feathersjs/errors@^4.5.1", "@feathersjs/errors@^4.5.2", "@feathersjs/errors@^4.5.8":
   version "4.5.8"
   resolved "https://registry.yarnpkg.com/@feathersjs/errors/-/errors-4.5.8.tgz#4ec2d954953990f5fd61d81459577cd0e0e082e0"
   integrity sha512-PPpTHpCuWR0nbs4vvQEdXC5gLnWHmeDCF+hm9IJouzYkYIjt0UG/vKvPCBNqCREVHVfSrszdzI1MSeHRSUQddQ==
@@ -322,7 +331,7 @@
     lodash "^4.17.19"
     uberproto "^2.0.6"
 
-"@feathersjs/feathers@^4.5.1", "@feathersjs/feathers@^4.5.8":
+"@feathersjs/feathers@^4.3.11", "@feathersjs/feathers@^4.5.1", "@feathersjs/feathers@^4.5.2", "@feathersjs/feathers@^4.5.8":
   version "4.5.8"
   resolved "https://registry.yarnpkg.com/@feathersjs/feathers/-/feathers-4.5.8.tgz#4d9e7fe035d568f5186c7d4669b57ab97a809d53"
   integrity sha512-6d8oOPGZu4unda4XXNXV8nzaUI/OsUXY7s30HFDFvf7c81A2oe2uQ/u8OdGEiKpKcX5Ugq9lKYhiYCvMM3dibA==
@@ -2701,6 +2710,16 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "2.1.1"
 
+"feathers-mikro-orm@https://github.com/UnumID/feathers-mikro-orm.git":
+  version "0.0.2"
+  resolved "https://github.com/UnumID/feathers-mikro-orm.git#aca0d98f449339d99f6483cb138eb2e1ab1223d4"
+  dependencies:
+    "@feathersjs/adapter-commons" "^4.3.11"
+    "@feathersjs/errors" "^4.3.11"
+    "@feathersjs/feathers" "^4.3.11"
+    mikro-orm "^3.6.9"
+    uuid "^8.3.0"
+
 feature-policy@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/feature-policy/-/feature-policy-0.3.0.tgz#7430e8e54a40da01156ca30aaec1a381ce536069"
@@ -4498,7 +4517,7 @@ micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
-mikro-orm@^3.6.15:
+mikro-orm@^3.6.15, mikro-orm@^3.6.9:
   version "3.6.15"
   resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-3.6.15.tgz#26d587dfbc8d9799b4ebc7a1201af4b150c7927b"
   integrity sha512-SFyF+b+S5Dx+hvk3CD1Nxs+AkZKZ1e6Cno03Xd5cOxNzGekbz/hFhPoppEwf/bNRfHslZ1Wtw/50NYKeIObZuA==
