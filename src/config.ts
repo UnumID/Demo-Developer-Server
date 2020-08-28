@@ -8,6 +8,7 @@ interface Config {
   DB_HOST: string;
   DB_PASSWORD: string;
   DB_USER: string;
+  ISSUER_URL: string;
 }
 
 const {
@@ -21,7 +22,8 @@ const {
   TEST_DB_PORT,
   TEST_DB_USER,
   TEST_DB_HOST,
-  TEST_DB_PASSWORD
+  TEST_DB_PASSWORD,
+  ISSUER_URL
 } = process.env;
 
 function ensureString (stringOrUndefined: string | undefined, defaultValue = ''): string {
@@ -37,5 +39,6 @@ export const config: Config = {
   DB_PORT: parseInt(ensureString(isTest() ? TEST_DB_PORT : DB_PORT, '5432'), 10),
   DB_USER: ensureString(isTest() ? TEST_DB_USER : DB_USER),
   DB_HOST: ensureString(isTest() ? TEST_DB_HOST : DB_HOST, 'localhost'),
-  DB_PASSWORD: ensureString(isTest() ? TEST_DB_PASSWORD : DB_PASSWORD)
+  DB_PASSWORD: ensureString(isTest() ? TEST_DB_PASSWORD : DB_PASSWORD),
+  ISSUER_URL: ensureString(ISSUER_URL)
 };

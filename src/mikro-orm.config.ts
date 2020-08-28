@@ -3,6 +3,7 @@ import { EntityCaseNamingStrategy } from 'mikro-orm';
 import { config, isTest } from './config';
 import { BaseEntity } from './entities/BaseEntity';
 import { Company } from './entities/Company';
+import { Issuer } from './entities/Issuer';
 
 export default {
   baseDir: process.cwd(),
@@ -14,7 +15,8 @@ export default {
   host: config.DB_HOST,
   entities: [
     BaseEntity,
-    Company
+    Company,
+    Issuer
   ],
   entitiesDirs: ['lib/entities'],
   entitiesDirsTs: ['src/entities'],
