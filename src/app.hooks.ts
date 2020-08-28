@@ -1,5 +1,6 @@
 // Application hooks that run for every service
-// Don't remove this comment. It's needed to format import lines nicely.
+import { HookContext } from '@feathersjs/feathers';
+import { pick } from 'lodash';
 
 export default {
   before: {
@@ -23,7 +24,12 @@ export default {
   },
 
   error: {
-    all: [],
+    all: [(ctx: HookContext): void => {
+      const { path, method, error } = ctx;
+      const { name, code, message } = error;
+      const info = pick(ctx, ['path', 'method', 'params', 'id', 'data']);
+      console.warn(`Error in ${path}#${method}: name=${name} code=${code} message=${message}`, info);
+    }],
     find: [],
     get: [],
     create: [],
