@@ -37,7 +37,7 @@ describe('Company entity', () => {
       expect(issuer.updatedAt).toBeDefined();
     });
 
-    it('sets name, unumIdApiKey, and unumIdCustomerUuid from options', () => {
+    it('sets properties from options', () => {
       const issuer = new Issuer(options);
       expect(issuer.name).toEqual(options.name);
       expect(issuer.did).toEqual(options.did);
@@ -49,7 +49,7 @@ describe('Company entity', () => {
   });
 
   describe('storage behavior', () => {
-    it('saves and restores the company', async () => {
+    it('saves and restores the issuer', async () => {
       const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(Issuer);
       const initial = new Issuer(options);

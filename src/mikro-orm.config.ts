@@ -4,6 +4,7 @@ import { config, isTest } from './config';
 import { BaseEntity } from './entities/BaseEntity';
 import { Company } from './entities/Company';
 import { Issuer } from './entities/Issuer';
+import { User } from './entities/User';
 
 export default {
   baseDir: process.cwd(),
@@ -16,7 +17,8 @@ export default {
   entities: [
     BaseEntity,
     Company,
-    Issuer
+    Issuer,
+    User
   ],
   entitiesDirs: ['lib/entities'],
   entitiesDirsTs: ['src/entities'],
