@@ -12,7 +12,7 @@ export interface UserOptions extends BaseEntityOptions {
 @Entity()
 export class User extends BaseEntity {
   @Property()
-  name?: string;
+  name: string;
 
   @Property({ nullable: true })
   did?: string;
