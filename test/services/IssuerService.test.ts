@@ -107,7 +107,7 @@ describe('Issuer service', () => {
       });
 
       afterAll(async () => {
-        await new Promise((resolve) => this.server.close(resolve));
+        await new Promise((resolve) => server.close(resolve));
         await resetDb(app);
       });
       it('saves the issuer in the database', async () => {
