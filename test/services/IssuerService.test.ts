@@ -86,8 +86,7 @@ describe('Issuer service', () => {
 
       beforeAll(async () => {
         app = await generateApp();
-        const port = app.get('port') || 8998;
-        server = app.listen(port);
+        server = app.listen();
         await new Promise((resolve) => server.once('listening', resolve));
 
         const companyOptions = {
@@ -107,9 +106,10 @@ describe('Issuer service', () => {
       });
 
       afterAll(async () => {
-        await new Promise((resolve) => server.close(resolve));
         await resetDb(app);
+        await new Promise((resolve) => server.close(resolve));
       });
+
       it('saves the issuer in the database', async () => {
         const found = await supertest(app).get(`/issuer/${issuer.uuid}`);
         expect(found.body).toEqual(issuer);
