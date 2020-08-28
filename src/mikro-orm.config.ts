@@ -5,6 +5,7 @@ import { BaseEntity } from './entities/BaseEntity';
 import { Company } from './entities/Company';
 import { Issuer } from './entities/Issuer';
 import { User } from './entities/User';
+import { IssuedCredential } from './entities/IssuedCredential';
 
 export default {
   baseDir: process.cwd(),
@@ -18,7 +19,8 @@ export default {
     BaseEntity,
     Company,
     Issuer,
-    User
+    User,
+    IssuedCredential
   ],
   entitiesDirs: ['lib/entities'],
   entitiesDirsTs: ['src/entities'],
