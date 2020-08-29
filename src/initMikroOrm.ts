@@ -8,6 +8,7 @@ import config from './mikro-orm.config';
 import { Company } from './entities/Company';
 import { Issuer } from './entities/Issuer';
 import { User } from './entities/User';
+import { IssuedCredential } from './entities/IssuedCredential';
 
 export const mikro = {} as Mikro;
 
@@ -18,6 +19,7 @@ export async function initMikroOrm (app: Application): Promise<void> {
   mikro.companyRepository = mikro.em.getRepository(Company);
   mikro.issuerRepository = mikro.em.getRepository(Issuer);
   mikro.userRepository = mikro.em.getRepository(User);
+  mikro.issuedCredentialRepository = mikro.em.getRepository(IssuedCredential);
 
   app.use((req, res, next) => RequestContext.create(mikro.orm.em, next));
   app.mikro = mikro; // eslint-disable-line no-param-reassign
