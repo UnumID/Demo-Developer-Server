@@ -6,6 +6,7 @@ import { Company } from './entities/Company';
 import { Issuer } from './entities/Issuer';
 import { User } from './entities/User';
 import { IssuedCredential } from './entities/IssuedCredential';
+import { Verifier } from './entities/Verifier';
 
 export default {
   baseDir: process.cwd(),
@@ -20,7 +21,8 @@ export default {
     Company,
     Issuer,
     User,
-    IssuedCredential
+    IssuedCredential,
+    Verifier
   ],
   entitiesDirs: ['lib/entities'],
   entitiesDirsTs: ['src/entities'],
