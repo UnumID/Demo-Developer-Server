@@ -29,7 +29,8 @@ export async function issueCredential (ctx: HookContext): Promise<HookContext> {
     },
     issuer: issuer.did,
     type: [type],
-    expirationDate
+    expirationDate,
+    eccPrivateKey: issuer.privateKey
   };
 
   const url = `${config.ISSUER_URL}/api/issueCredentials`;
