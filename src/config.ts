@@ -9,6 +9,7 @@ interface Config {
   DB_PASSWORD: string;
   DB_USER: string;
   ISSUER_URL: string;
+  VERIFIER_URL: string;
 }
 
 const {
@@ -23,7 +24,8 @@ const {
   TEST_DB_USER,
   TEST_DB_HOST,
   TEST_DB_PASSWORD,
-  ISSUER_URL
+  ISSUER_URL,
+  VERIFIER_URL
 } = process.env;
 
 function ensureString (stringOrUndefined: string | undefined, defaultValue = ''): string {
@@ -40,5 +42,6 @@ export const config: Config = {
   DB_USER: ensureString(isTest() ? TEST_DB_USER : DB_USER),
   DB_HOST: ensureString(isTest() ? TEST_DB_HOST : DB_HOST, 'localhost'),
   DB_PASSWORD: ensureString(isTest() ? TEST_DB_PASSWORD : DB_PASSWORD),
-  ISSUER_URL: ensureString(ISSUER_URL)
+  ISSUER_URL: ensureString(ISSUER_URL),
+  VERIFIER_URL: ensureString(VERIFIER_URL)
 };
