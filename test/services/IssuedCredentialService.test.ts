@@ -108,6 +108,21 @@ describe('IssuedCredential service', () => {
         expect(mockGetUser).toBeCalledWith(dummyUser.uuid);
       });
 
+      it('issues a credential', async () => {
+        await issueCredential(ctx);
+        const expected = {
+          credentialSubject: {
+            id: dummyUser.did,
+            test: 'test'
+          },
+          issuer: dummyIssuer.did,
+          type: ['TestCredential'],
+          eccPrivateKey: dummyIssuer.privateKey,
+          expirationDate: undefined
+        };
+        expect((axios.post as jest.Mock).mock.calls[0][1]).toEqual(expected);
+      });
+
       it('returns a new context with the issued credential', async () => {
         const newCtx = await issueCredential(ctx);
         const expected = {
