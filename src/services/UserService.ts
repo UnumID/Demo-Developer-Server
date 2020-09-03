@@ -15,7 +15,7 @@ export default function (app: Application): void {
     throw new Error('error configuring UserService, app.mikro is not properly initialized');
   }
 
-  const repository = app.mikro.companyRepository;
+  const repository = app.mikro.userRepository;
 
   if (!repository) {
     throw new Error('error configuring UserService, repository is not properly initialized');
