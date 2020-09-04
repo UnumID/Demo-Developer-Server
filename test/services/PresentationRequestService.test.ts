@@ -107,8 +107,6 @@ describe('PresentationRequest service', () => {
 
         const companyResponse = await supertest(app).post('/company').send(companyOptions);
 
-        console.log('mockReturnedRequest', mockReturnedRequest);
-
         (axios.post as jest.Mock)
           .mockReturnValueOnce({ data: mockReturnedIssuer, headers: mockReturnedHeaders })
           .mockReturnValueOnce({ data: mockReturnedVerifier, headers: mockReturnedHeaders })

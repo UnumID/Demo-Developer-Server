@@ -21,9 +21,6 @@ export class PresentationRequestService {
     const issuer = await issuerService.get(data.issuerUuid);
     const verifier = await verifierService.get(data.verifierUuid);
 
-    console.log('issuer', issuer);
-    console.log('verifier', verifier);
-
     const options = {
       verifier: {
         name: verifier.name,
