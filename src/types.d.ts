@@ -23,3 +23,11 @@ export interface Credential {
   expirationDate?: Date;
   proof: Proof;
 }
+
+export interface Presentation {
+  '@context': ['https://www.w3.org/2018/credentials/v1', ...string[]];
+  type: ['VerifiablePresentation', ...string[]];
+  verifiableCredential: Credential[];
+  presentationRequestUuid: string;
+  proof: Proof
+}
