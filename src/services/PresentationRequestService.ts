@@ -21,11 +21,12 @@ export class PresentationRequestService {
     const issuer = await issuerService.get(data.issuerUuid);
     const verifier = await verifierService.get(data.verifierUuid);
 
+    const presentationUrl = `${config.BASE_URL}/presentation?verifier=${verifier.uuid}`;
     const options = {
       verifier: {
         name: verifier.name,
         did: verifier.did,
-        url: 'https://demo-api.dev-unumid.org/presentation'
+        url: presentationUrl
       },
       credentialRequests: data.credentialTypes.map(credentialType => ({
         type: credentialType,

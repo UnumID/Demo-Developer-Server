@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import generateApp from '../../src/generate-app';
 import { resetDb } from '../resetDb';
 import { Application } from '../../src/declarations';
+import { config } from '../../src/config';
+import { Verifier } from '../../src/entities/Verifier';
 
 jest.mock('axios');
 describe('PresentationRequest service', () => {
@@ -21,6 +23,7 @@ describe('PresentationRequest service', () => {
     describe('post', () => {
       let server: Server;
       let app: Application;
+      let verifier: Verifier;
 
       const companyOptions = {
         unumIdApiKey: '3n5jhT2vXDEEXlRj09oI9pP6DmWNXNCghUMC/ybK2Lw=',
@@ -74,7 +77,7 @@ describe('PresentationRequest service', () => {
         verifier: {
           name: 'ACME, Inc. Verifier',
           did: mockReturnedVerifier.did,
-          url: 'https://demo-api.dev-unumid.org/presentation'
+          url: `${config.BASE_URL}/presentation?verifier=${mockReturnedVerifier.uuid}`
         },
         credentialRequests: [
           {
@@ -120,9 +123,10 @@ describe('PresentationRequest service', () => {
         };
 
         const verifierResponse = await supertest(app).post('/verifier').send(verifierOptions);
+        verifier = verifierResponse.body;
 
         const options = {
-          verifierUuid: verifierResponse.body.uuid,
+          verifierUuid: verifier.uuid,
           issuerUuid: issuerResponse.body.uuid,
           credentialTypes: ['TestCredential']
         };
@@ -140,7 +144,7 @@ describe('PresentationRequest service', () => {
           verifier: {
             name: mockReturnedVerifier.name,
             did: mockReturnedVerifier.did,
-            url: 'https://demo-api.dev-unumid.org/presentation'
+            url: `${config.BASE_URL}/presentation?verifier=${verifier.uuid}`
           },
           credentialRequests: [{
             type: 'TestCredential',
