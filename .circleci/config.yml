@@ -64,12 +64,63 @@ jobs:
           name: Jest Tests
           command: yarn test
 
+  build-and-push-image:
+    executor: aws-cli/default
+    parameters:
+      reg:
+        type: string
+        default: "248606629437.dkr.ecr.us-west-2.amazonaws.com"
+      repo:
+        type: string
+    steps:
+      - checkout
+      - aws-cli/setup
+      - setup_remote_docker
+      - run:
+          command: |
+            echo Logging in to Amazon ECR...
+            $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+            echo Building the Docker image...
+            docker build -t ${CIRCLE_SHA1} .
+            docker tag ${CIRCLE_SHA1} << parameters.reg >>/<< parameters.repo >>:dev-latest
+            docker tag ${CIRCLE_SHA1} << parameters.reg >>/<< parameters.repo >>:"${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+            echo Pushing the Docker image...
+            docker push << parameters.reg >>/<< parameters.repo >>:"${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+            docker push << parameters.reg >>/<< parameters.repo >>:dev-latest
+          name: Update container image
+
 
 workflows:
   lint-and-test:
+    jobs:
+      - lint:
+          filters:
+            branches:
+              ignore:
+                - main
+                - test-circleci
+      - test:
+          requires:
+            - lint
+          filters:
+            branches:
+              ignore:
+                - main
+                - test-circleci
+
+  build-and-deploy:
     jobs:
       - lint
       - test:
           requires:
             - lint
-
+      - build-and-push-image:
+          requires:
+            - test
+          context: AWS-Dev
+          repo: test-customer-app
+          filters:
+            branches:
+              only:
+                - main
+                - test-circleci
