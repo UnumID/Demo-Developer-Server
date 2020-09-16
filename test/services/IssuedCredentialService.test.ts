@@ -123,6 +123,16 @@ describe('IssuedCredential service', () => {
         expect((axios.post as jest.Mock).mock.calls[0][1]).toEqual(expected);
       });
 
+      it('sends the issuer auth token to the issuer app', async () => {
+        await issueCredential(ctx);
+
+        // TODO: update once issuer app has been updated to expect the correct header
+        const expected = { headers: { 'x-auth-token': dummyIssuer.authToken } };
+        // const expected = { headers: { Authorization: `Bearer ${dummyIssuer.authToken}` } };
+
+        expect((axios.post as jest.Mock).mock.calls[0][2]).toEqual(expected);
+      });
+
       it('returns a new context with the issued credential', async () => {
         const newCtx = await issueCredential(ctx);
         const expected = {

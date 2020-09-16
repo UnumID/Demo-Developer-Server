@@ -34,7 +34,12 @@ export async function issueCredential (ctx: HookContext): Promise<HookContext> {
   };
 
   const url = `${config.ISSUER_URL}/api/issueCredentials`;
-  const headers = { Authorization: issuer.authToken };
+
+  // this should use the Authorization header and a bearer token,
+  // but the issuer app expects this x-auth-token header instead
+  // TODO: update once the issuer app has been updated
+  const headers = { 'x-auth-token': issuer.authToken };
+  // const headers = { Authorization: `Bearer ${issuer.authToken}` };
 
   const response = await axios.post(url, options, { headers });
 
