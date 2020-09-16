@@ -154,5 +154,5 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - test-circleci
