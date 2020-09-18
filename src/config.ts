@@ -11,6 +11,8 @@ interface Config {
   ISSUER_URL: string;
   VERIFIER_URL: string;
   BASE_URL: string;
+  PAPERTRAIL_PORT: number;
+  NODE_ENV: string;
 }
 
 const {
@@ -27,7 +29,8 @@ const {
   TEST_DB_PASSWORD,
   ISSUER_URL,
   VERIFIER_URL,
-  BASE_URL
+  BASE_URL,
+  PAPERTRAIL_PORT
 } = process.env;
 
 function ensureString (stringOrUndefined: string | undefined, defaultValue = ''): string {
@@ -46,5 +49,7 @@ export const config: Config = {
   DB_PASSWORD: ensureString(isTest() ? TEST_DB_PASSWORD : DB_PASSWORD),
   ISSUER_URL: ensureString(ISSUER_URL),
   VERIFIER_URL: ensureString(VERIFIER_URL),
-  BASE_URL: ensureString(BASE_URL, 'http://localhost:3031')
+  BASE_URL: ensureString(BASE_URL, 'http://localhost:3031'),
+  PAPERTRAIL_PORT: parseInt(ensureString(PAPERTRAIL_PORT), 10),
+  NODE_ENV: ensureString(NODE_ENV, 'development')
 };
