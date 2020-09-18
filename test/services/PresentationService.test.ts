@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BadRequest } from '@feathersjs/errors';
 
 import generateApp from '../../src/generate-app';
-import { Presentation } from '../../src/types';
+import { Presentation, NoPresentation } from '../../src/types';
 import { Application } from '../../src/declarations';
 import { Verifier } from '../../src/entities/Verifier';
 import { config } from '../../src/config';
@@ -141,13 +141,31 @@ describe('PresentationService', () => {
       it('returns a success response if the presentation is valid', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
-        expect(response.body).toEqual({ isVerified: true });
+        expect(response.body).toEqual({ isVerified: true, type: 'VerifiablePresentation' });
+      });
+
+      it('handles a NoPresentation', async () => {
+        const NoPresentation: NoPresentation = {
+          type: ['NoPresentation'],
+          presentationRequestUuid: '0cebee3b-3295-4ef6-a4d6-7dfea413b3aa',
+          proof: {
+            created: '2020-09-03T18:50:52.105Z',
+            signatureValue: 'iKx1CJLYue7vopUo2fqGps3TWmxqRxoBDTupumLkaNp2W3UeAjwLUf5WxLRCRkDzEFeKCgT7JdF5fqbpvqnBZoHyYzWYbmW4YQ',
+            type: 'secp256r1Signature2020',
+            verificationMethod: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8#1e126861-a51b-491f-9206-e2c6b8639fd1',
+            proofPurpose: 'AssertionMethod'
+          },
+          holder: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8'
+        };
+
+        const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(NoPresentation);
+        expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation' });
       });
 
       it('returns a failure response if the presentation is invalid', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: false }, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
-        expect(response.body).toEqual({ isVerified: false });
+        expect(response.body).toEqual({ isVerified: false, type: 'VerifiablePresentation' });
       });
     });
   });

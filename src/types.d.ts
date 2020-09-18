@@ -31,3 +31,12 @@ export interface Presentation {
   presentationRequestUuid: string;
   proof: Proof
 }
+
+export interface NoPresentation {
+  type: ['NoPresentation' | 'Declination' | 'Report', ...string[]];
+  holder: string;
+  proof: Proof;
+  presentationRequestUuid: string;
+}
+
+export type PresentationOrNoPresentation = Presentation | NoPresentation;
