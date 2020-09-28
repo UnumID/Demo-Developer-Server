@@ -24,7 +24,7 @@
     "yarn": ">= 0.18.0"
   },
   "scripts": {
-    "test": "yarn run build && NODE_ENV=test yarn migrate && NODE_ENV=test yarn run jest",
+    "test": "yarn run build && NODE_ENV=test yarn migrate && NODE_ENV=test yarn run jest --runInBand",
     "dev": "ts-node-dev --no-notify src/",
     "start": "yarn migrate && node lib/",
     "jest": "jest  --forceExit",
