@@ -60,7 +60,6 @@ describe('Issuer entity', () => {
 
   describe('storage behavior', () => {
     it('saves and restores the issuer', async () => {
-      // const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(Issuer);
       const initial = new Issuer(options);
       await repository.persistAndFlush(initial);
@@ -69,7 +68,7 @@ describe('Issuer entity', () => {
       orm.em.clear();
 
       // find it by UUID
-      const saved = await repository.findOne(initial.uuid);
+      const saved = await repository.findOneOrFail(initial.uuid);
       expect(saved).toEqual(initial);
     });
   });
