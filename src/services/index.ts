@@ -6,6 +6,7 @@ import issuedCredential from './IssuedCredentialService';
 import verifier from './VerifierService';
 import presentationRequest from './PresentationRequestService';
 import presentation from './PresentationService';
+import sharedCredential from './SharedCredentialService';
 
 export default function (app: Application): void {
   app.configure(company);
@@ -15,4 +16,5 @@ export default function (app: Application): void {
   app.configure(verifier);
   app.configure(presentationRequest);
   app.configure(presentation);
+  app.configure(sharedCredential);
 }

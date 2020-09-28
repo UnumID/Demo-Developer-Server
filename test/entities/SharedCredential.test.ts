@@ -1,14 +1,15 @@
 import { MikroORM } from 'mikro-orm';
 
 import config from '../../src/mikro-orm.config';
-import { IssuedCredential, IssuedCredentialOptions } from '../../src/entities/IssuedCredential';
+import { SharedCredential, SharedCredentialOptions } from '../../src/entities/SharedCredential';
 import { Company } from '../../src/entities/Company';
 import { User } from '../../src/entities/User';
 import { Issuer } from '../../src/entities/Issuer';
+import { Verifier } from '../../src/entities/Verifier';
 import { resetDb } from '../resetDb';
 
-describe('IssuedCredential entity', () => {
-  let options: IssuedCredentialOptions;
+describe('SharedCredential entity', () => {
+  let options: SharedCredentialOptions;
   let orm;
 
   beforeEach(async () => {
@@ -31,6 +32,14 @@ describe('IssuedCredential entity', () => {
       companyUuid: company.uuid
     };
 
+    const verifierOptions = {
+      name: 'ACME, Inc. Verifier',
+      did: 'did:unum:e9305322-f642-45c4-9efc-cf4f5326cd6a',
+      privateKey: '-----BEGIN EC PRIVATE KEY-----MHcCAQEEIIFtwDWUzCbfeikEgD4m6G58hQo51d2Qz6bL11AHDMbDoAoGCCqGSM49AwEHoUQDQgAEwte3H5BXDcJy+4z4avMsNuqXFGYfL3ewcU0pe+UrYbhh6B7oCdvSPocO55BZO5pAOF/qxa/NhwixxqFf9eWVFg==-----END EC PRIVATE KEY-----',
+      authToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoidmVyaWZpZXIiLCJ1dWlkIjoiM2VjYzVlZDMtZjdhMC00OTU4LWJjOTgtYjc5NTQxMThmODUyIiwiZGlkIjoiZGlkOnVudW06ZWVhYmU0NGItNjcxMi00NTRkLWIzMWItNTM0NTg4NTlmMTFmIiwiZXhwIjoxNTk1NDcxNTc0LjQyMiwiaWF0IjoxNTk1NTI5NTExfQ.4iJn_a8fHnVsmegdR5uIsdCjXmyZ505x1nA8NVvTEBg',
+      companyUuid: company.uuid
+    };
+
     const issuer = new Issuer(issuerOptions);
     orm.em.persistLater(issuer);
 
@@ -42,11 +51,15 @@ describe('IssuedCredential entity', () => {
     const user = new User(userOptions);
     orm.em.persistLater(user);
 
+    const verifier = new Verifier(verifierOptions);
+    orm.em.persistLater(verifier);
+
     await orm.em.flush();
 
     options = {
       issuerUuid: issuer.uuid,
       userUuid: user.uuid,
+      verifierUuid: verifier.uuid,
       credential: {
         '@context': ['https://www.w3.org/2018/credentials/v1'],
         id: '0c93beb0-2605-4650-b698-3fd92eb110b9',
@@ -81,24 +94,25 @@ describe('IssuedCredential entity', () => {
 
   describe('constructor behavior', () => {
     it('generates uuid, createdAt, and updatedAt properties', () => {
-      const issuedCredential = new IssuedCredential(options);
-      expect(issuedCredential.uuid).toBeDefined();
-      expect(issuedCredential.createdAt).toBeDefined();
-      expect(issuedCredential.updatedAt).toBeDefined();
+      const sharedCredential = new SharedCredential(options);
+      expect(sharedCredential.uuid).toBeDefined();
+      expect(sharedCredential.createdAt).toBeDefined();
+      expect(sharedCredential.updatedAt).toBeDefined();
     });
 
-    it('sets issuerUuid, userUuid, and credential from options', () => {
-      const issuedCredential = new IssuedCredential(options);
-      expect(issuedCredential.issuerUuid).toEqual(options.issuerUuid);
-      expect(issuedCredential.userUuid).toEqual(options.userUuid);
-      expect(issuedCredential.credential).toEqual(options.credential);
+    it('sets issuerUuid, verifierUuid, userUuid, and credential from options', () => {
+      const sharedCredential = new SharedCredential(options);
+      expect(sharedCredential.issuerUuid).toEqual(options.issuerUuid);
+      expect(sharedCredential.verifierUuid).toEqual(options.verifierUuid);
+      expect(sharedCredential.userUuid).toEqual(options.userUuid);
+      expect(sharedCredential.credential).toEqual(options.credential);
     });
   });
 
   describe('storage behavior', () => {
-    it('saves and restores the IssuedCredential', async () => {
-      const repository = orm.em.getRepository(IssuedCredential);
-      const initial = new IssuedCredential(options);
+    it('saves and restores the SharedCredential', async () => {
+      const repository = orm.em.getRepository(SharedCredential);
+      const initial = new SharedCredential(options);
       await repository.persistAndFlush(initial);
 
       // clear the identity map
