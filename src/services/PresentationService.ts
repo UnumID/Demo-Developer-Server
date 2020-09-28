@@ -4,12 +4,16 @@ import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { PresentationOrNoPresentation } from '../types';
+import { PresentationOrNoPresentation, Presentation } from '../types';
 import logger from '../logger';
 
 export interface VerificationResponse {
   isVerified: boolean;
   type: 'VerifiablePresentation' | 'NoPresentation'
+}
+
+export function isPresentation (presentation: PresentationOrNoPresentation): presentation is Presentation {
+  return presentation.type[0] === 'VerifiablePresentation';
 }
 
 export class PresentationService {
@@ -29,12 +33,10 @@ export class PresentationService {
     const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
     const headers = { 'x-auth-token': verifier.authToken };
 
-    const { type } = presentation;
-
     // for now, assume all NoPresentations are valid
     // TODO: remove or replace with actual implementation once Verifier-Server-App is updated
     // to handle NoPresentations (https://trello.com/c/DbvobNVo/612-handle-nopresentations-part-2)
-    if (type[0] !== 'VerifiablePresentation') {
+    if (!isPresentation(presentation)) {
       logger.info('Received NoPresentation', presentation);
       return { isVerified: true, type: 'NoPresentation' };
     }
@@ -52,7 +54,26 @@ export class PresentationService {
       return { isVerified: false, type: 'VerifiablePresentation' };
     }
 
-    // TODO: save shared credentials
+    // save shared credentials
+    const sharedCredentialService = this.app.service('sharedCredential');
+    const issuerService = this.app.service('issuer');
+    const userService = this.app.service('user');
+
+    for (const credential of presentation.verifiableCredential) {
+      // get saved issuer and user by their dids
+      // note that the saved dids will not include key identifier fragments, which may be included in the credential
+      const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });
+      const user = await userService.get(null, { where: { did: credential.credentialSubject.id.split('#')[0] } });
+
+      const options = {
+        verifierUuid,
+        issuerUuid: issuer.uuid,
+        userUuid: user.uuid,
+        credential
+      };
+
+      await sharedCredentialService.create(options);
+    }
 
     return { isVerified: true, type: 'VerifiablePresentation' };
   }
