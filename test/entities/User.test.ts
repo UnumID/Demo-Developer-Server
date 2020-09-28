@@ -4,12 +4,14 @@ import config from '../../src/mikro-orm.config';
 import { User, UserOptions } from '../../src/entities/User';
 // import { UserOptions } from '../../src/entities/User';
 import { Company } from '../../src/entities/Company';
+import { resetDb } from '../resetDb';
 
 describe('User entity', () => {
   let options: UserOptions;
+  let orm;
 
-  beforeAll(async () => {
-    const orm = await MikroORM.init(config);
+  beforeEach(async () => {
+    orm = await MikroORM.init(config);
     const repository = orm.em.getRepository(Company);
 
     const companyOptions = {
@@ -24,6 +26,13 @@ describe('User entity', () => {
       name: 'Testy McTesterson',
       companyUuid: company.uuid
     };
+
+    // clear the identity map
+    orm.em.clear();
+  });
+
+  afterEach(async () => {
+    await resetDb(orm.em);
   });
 
   describe('constructor behavior', () => {
@@ -44,7 +53,6 @@ describe('User entity', () => {
 
   describe('storage behavior', () => {
     it('saves and restores the user', async () => {
-      const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(User);
       const initial = new User(options);
       await repository.persistAndFlush(initial);

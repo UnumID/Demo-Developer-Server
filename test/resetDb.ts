@@ -1,9 +1,10 @@
-import { Application } from '../src/declarations';
+import { EntityManager } from 'mikro-orm';
 
 // resets the test database
-export async function resetDb (app: Application): Promise<void> {
-  const { em } = app.mikro;
+export async function resetDb (em: EntityManager): Promise<void> {
   const connection = em.getConnection();
+  await connection.execute('DELETE FROM "SharedCredential";');
+  await connection.execute('DELETE FROM "IssuedCredential";');
   await connection.execute('DELETE FROM "Issuer";');
   await connection.execute('DELETE FROM "Verifier";');
   await connection.execute('DELETE FROM "User";');

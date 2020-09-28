@@ -3,12 +3,14 @@ import { MikroORM } from 'mikro-orm';
 import config from '../../src/mikro-orm.config';
 import { Issuer, IssuerOptions } from '../../src/entities/Issuer';
 import { Company } from '../../src/entities/Company';
+import { resetDb } from '../resetDb';
 
-describe('Company entity', () => {
+describe('Issuer entity', () => {
   let options: IssuerOptions;
+  let orm;
 
-  beforeAll(async () => {
-    const orm = await MikroORM.init(config);
+  beforeEach(async () => {
+    orm = await MikroORM.init(config);
     const repository = orm.em.getRepository(Company);
 
     const companyOptions = {
@@ -27,6 +29,14 @@ describe('Company entity', () => {
       authToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoidmVyaWZpZXIiLCJ1dWlkIjoiM2VjYzVlZDMtZjdhMC00OTU4LWJjOTgtYjc5NTQxMThmODUyIiwiZGlkIjoiZGlkOnVudW06ZWVhYmU0NGItNjcxMi00NTRkLWIzMWItNTM0NTg4NTlmMTFmIiwiZXhwIjoxNTk1NDcxNTc0LjQyMiwiaWF0IjoxNTk1NTI5NTExfQ.4iJn_a8fHnVsmegdR5uIsdCjXmyZ505x1nA8NVvTEBg',
       companyUuid: company.uuid
     };
+
+    // clear the identity map
+    orm.em.clear();
+  });
+
+  afterEach(async () => {
+    orm.em.clear();
+    await resetDb(orm.em);
   });
 
   describe('constructor behavior', () => {
@@ -50,7 +60,7 @@ describe('Company entity', () => {
 
   describe('storage behavior', () => {
     it('saves and restores the issuer', async () => {
-      const orm = await MikroORM.init(config);
+      // const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(Issuer);
       const initial = new Issuer(options);
       await repository.persistAndFlush(initial);
@@ -59,7 +69,7 @@ describe('Company entity', () => {
       orm.em.clear();
 
       // find it by UUID
-      const saved = await repository.findOneOrFail(initial.uuid);
+      const saved = await repository.findOne(initial.uuid);
       expect(saved).toEqual(initial);
     });
   });

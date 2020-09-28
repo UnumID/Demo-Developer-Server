@@ -5,12 +5,14 @@ import { IssuedCredential, IssuedCredentialOptions } from '../../src/entities/Is
 import { Company } from '../../src/entities/Company';
 import { User } from '../../src/entities/User';
 import { Issuer } from '../../src/entities/Issuer';
+import { resetDb } from '../resetDb';
 
 describe('IssuedCredential entity', () => {
   let options: IssuedCredentialOptions;
+  let orm;
 
-  beforeAll(async () => {
-    const orm = await MikroORM.init(config);
+  beforeEach(async () => {
+    orm = await MikroORM.init(config);
 
     const companyOptions = {
       unumIdApiKey: '3n5jhT2vXDEEXlRj09oI9pP6DmWNXNCghUMC/ybK2Lw=',
@@ -68,6 +70,13 @@ describe('IssuedCredential entity', () => {
         }
       }
     };
+
+    // clear the identity map
+    orm.em.clear();
+  });
+
+  afterEach(async () => {
+    await resetDb(orm.em);
   });
 
   describe('constructor behavior', () => {
@@ -88,7 +97,6 @@ describe('IssuedCredential entity', () => {
 
   describe('storage behavior', () => {
     it('saves and restores the IssuedCredential', async () => {
-      const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(IssuedCredential);
       const initial = new IssuedCredential(options);
       await repository.persistAndFlush(initial);

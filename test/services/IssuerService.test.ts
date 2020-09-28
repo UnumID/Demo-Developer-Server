@@ -106,7 +106,7 @@ describe('Issuer service', () => {
       });
 
       afterAll(async () => {
-        await resetDb(app);
+        await resetDb(app.mikro.em);
         await new Promise((resolve) => server.close(resolve));
       });
 

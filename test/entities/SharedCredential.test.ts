@@ -6,12 +6,14 @@ import { Company } from '../../src/entities/Company';
 import { User } from '../../src/entities/User';
 import { Issuer } from '../../src/entities/Issuer';
 import { Verifier } from '../../src/entities/Verifier';
+import { resetDb } from '../resetDb';
 
 describe('SharedCredential entity', () => {
   let options: SharedCredentialOptions;
+  let orm;
 
-  beforeAll(async () => {
-    const orm = await MikroORM.init(config);
+  beforeEach(async () => {
+    orm = await MikroORM.init(config);
 
     const companyOptions = {
       unumIdApiKey: '3n5jhT2vXDEEXlRj09oI9pP6DmWNXNCghUMC/ybK2Lw=',
@@ -81,6 +83,13 @@ describe('SharedCredential entity', () => {
         }
       }
     };
+
+    // clear the identity map
+    orm.em.clear();
+  });
+
+  afterEach(async () => {
+    await resetDb(orm.em);
   });
 
   describe('constructor behavior', () => {
@@ -102,7 +111,6 @@ describe('SharedCredential entity', () => {
 
   describe('storage behavior', () => {
     it('saves and restores the SharedCredential', async () => {
-      const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(SharedCredential);
       const initial = new SharedCredential(options);
       await repository.persistAndFlush(initial);

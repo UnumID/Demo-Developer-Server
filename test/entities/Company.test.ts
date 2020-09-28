@@ -2,8 +2,19 @@ import { MikroORM } from 'mikro-orm';
 
 import config from '../../src/mikro-orm.config';
 import { Company, CompanyOptions } from '../../src/entities/Company';
+import { resetDb } from '../resetDb';
 
 describe('Company entity', () => {
+  let orm;
+
+  beforeEach(async () => {
+    orm = await MikroORM.init(config);
+  });
+
+  afterEach(async () => {
+    await resetDb(orm.em);
+  });
+
   const options: CompanyOptions = {
     unumIdApiKey: '3n5jhT2vXDEEXlRj09oI9pP6DmWNXNCghUMC/ybK2Lw=',
     name: 'ACME, Inc.',
@@ -28,7 +39,6 @@ describe('Company entity', () => {
 
   describe('storage behavior', () => {
     it('saves and restores the company', async () => {
-      const orm = await MikroORM.init(config);
       const repository = orm.em.getRepository(Company);
       const initial = new Company(options);
       await repository.persistAndFlush(initial);
