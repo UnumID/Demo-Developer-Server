@@ -38,7 +38,11 @@ export class PresentationService {
     // to handle NoPresentations (https://trello.com/c/DbvobNVo/612-handle-nopresentations-part-2)
     if (!isPresentation(presentation)) {
       logger.info('Received NoPresentation', presentation);
-      return { isVerified: true, type: 'NoPresentation' };
+
+      const noPresentationUrl = `${config.VERIFIER_URL}/api/verifyNoPresentation`;
+
+      const response = await axios.post(noPresentationUrl, presentation, { headers });
+      return { isVerified: response.data.isVerified, type: 'NoPresentation' };
     }
 
     const response = await axios.post(url, presentation, { headers });
