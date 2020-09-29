@@ -230,17 +230,17 @@ describe('PresentationService', () => {
           expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation' });
         });
 
-        it('returns a failure response if the NoPresentation is invalid', async () => {
+        it('returns a 400 status code if the NoPresentation is not verified', async () => {
           (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false } });
           const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(noPresentation);
-          expect(response.body).toEqual({ isVerified: false, type: 'NoPresentation' });
+          expect(response.status).toEqual(400);
         });
       });
 
-      it('returns a failure response if the presentation is invalid', async () => {
+      it('returns 400 status code if the Presentation is not verified', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: false }, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
-        expect(response.body).toEqual({ isVerified: false, type: 'VerifiablePresentation' });
+        expect(response.status).toEqual(400);
       });
     });
   });

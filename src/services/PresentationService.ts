@@ -42,6 +42,10 @@ export class PresentationService {
       const noPresentationUrl = `${config.VERIFIER_URL}/api/verifyNoPresentation`;
 
       const response = await axios.post(noPresentationUrl, presentation, { headers });
+
+      if (!response.data.isVerified) {
+        throw new BadRequest('Verification failed.');
+      }
       return { isVerified: response.data.isVerified, type: 'NoPresentation' };
     }
 
@@ -57,7 +61,8 @@ export class PresentationService {
 
     // return early if the presentation could not be verified
     if (!response.data.verifiedStatus) {
-      return { isVerified: false, type: 'VerifiablePresentation' };
+      // return { isVerified: false, type: 'VerifiablePresentation' };
+      throw new BadRequest('Verification failed');
     }
 
     // save shared credentials
