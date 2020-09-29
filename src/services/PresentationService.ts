@@ -47,6 +47,8 @@ export class PresentationService {
 
     const response = await axios.post(url, presentation, { headers });
 
+    logger.info('response from verifier app', response.data);
+
     // update the verifier's auth token if it was reissued
     const authTokenResponse = response.headers['x-auth-token'];
     if (authTokenResponse !== verifier.authToken) {
