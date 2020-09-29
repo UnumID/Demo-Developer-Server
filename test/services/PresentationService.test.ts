@@ -210,7 +210,7 @@ describe('PresentationService', () => {
         expect(sharedCredentialsResponse.body[0].credential).toEqual(expected);
       });
 
-      it('handles a NoPresentation', async () => {
+      describe('handling a NoPresentation', () => {
         const noPresentation: NoPresentation = {
           type: ['NoPresentation'],
           presentationRequestUuid: '0cebee3b-3295-4ef6-a4d6-7dfea413b3aa',
@@ -224,8 +224,17 @@ describe('PresentationService', () => {
           holder: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8'
         };
 
-        const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(noPresentation);
-        expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation' });
+        it('returns a success response if the NoPresentation is valid', async () => {
+          (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: true } });
+          const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(noPresentation);
+          expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation' });
+        });
+
+        it('returns a failure response if the NoPresentation is invalid', async () => {
+          (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false } });
+          const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(noPresentation);
+          expect(response.body).toEqual({ isVerified: false, type: 'NoPresentation' });
+        });
       });
 
       it('returns a failure response if the presentation is invalid', async () => {
