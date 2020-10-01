@@ -41,7 +41,7 @@ export class PresentationRequestService {
     };
 
     const url = `${config.VERIFIER_URL}/api/sendRequest`;
-    const headers = { 'x-auth-token': verifier.authToken };
+    const headers = { Authorization: `Bearer ${verifier.authToken}` };
 
     const response = await axios.post(url, options, { headers });
 

@@ -126,7 +126,7 @@ describe('PresentationService', () => {
       it('sends the presentation to the verifier app for verification', async () => {
         await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
         const expectedUrl = `${config.VERIFIER_URL}/api/verifyPresentation`;
-        const expectedHeaders = { 'x-auth-token': verifier.authToken };
+        const expectedHeaders = { Authorization: `Bearer ${verifier.authToken}` };
         const expectedData = {
           ...presentation,
           verifiableCredential: [{
