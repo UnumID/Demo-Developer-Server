@@ -31,7 +31,7 @@ export class PresentationService {
 
     // verify presentation
     const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
-    const headers = { 'x-auth-token': verifier.authToken };
+    const headers = { Authorization: `Bearer ${verifier.authToken}` };
 
     // for now, assume all NoPresentations are valid
     // TODO: remove or replace with actual implementation once Verifier-Server-App is updated
