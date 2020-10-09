@@ -1,4 +1,4 @@
-FROM node:12-alpine as build-stage
+FROM node:12.16.2-alpine as build-stage
 
 RUN apk update && \
     apk upgrade && \
