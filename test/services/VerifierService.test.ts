@@ -95,7 +95,8 @@ describe('Verifier service', () => {
 
         const options = {
           name: 'ACME Inc. TEST Verifier',
-          companyUuid: companyResponse.body.uuid
+          companyUuid: companyResponse.body.uuid,
+          verifierApiKey: 'VjYaaxArxZP+EdvatoHz7hRZCE8wS3g+yBNhqJpCkrY='
         };
 
         const verifierResponse = await supertest(app).post('/verifier').send(options);
