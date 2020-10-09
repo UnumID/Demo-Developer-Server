@@ -22,7 +22,7 @@ export async function registerVerifier (ctx: HookContext): Promise<HookContext> 
   const url = `${config.VERIFIER_URL}/api/register`;
   const verifierOptions = {
     ...data,
-    apiKey: company.unumIdApiKey,
+    apiKey: data.verifierApiKey,
     customerUuid: company.unumIdCustomerUuid
   };
 
