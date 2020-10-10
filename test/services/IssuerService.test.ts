@@ -21,8 +21,8 @@ describe('Issuer service', () => {
     createdAt: now,
     updatedAt: now
   };
-  const mockFind = jest.fn(() => [dummyCompany]);
-  const mockService = jest.fn(() => ({ find: mockFind }));
+  const mockGet = jest.fn(() => [dummyCompany]);
+  const mockService = jest.fn(() => ({ get: mockGet }));
   const ctx = {
     app: {
       service: mockService
@@ -61,10 +61,10 @@ describe('Issuer service', () => {
 
   describe('hooks', () => {
     describe('registerIssuer', () => {
-      it('gets the default company', async () => {
+      it('gets the company', async () => {
         await registerIssuer(ctx);
         expect(mockService).toBeCalledWith('company');
-        expect(mockFind).toBeCalled();
+        expect(mockGet).toBeCalled();
       });
 
       it('returns a new context with values from the issuer app', async () => {
@@ -73,7 +73,6 @@ describe('Issuer service', () => {
         expect(newData.privateKey).toEqual(mockReturnedIssuer.keys.signing.privateKey);
         expect(newData.did).toEqual(mockReturnedIssuer.did);
         expect(newData.authToken).toEqual(mockReturnedHeaders['x-auth-token']);
-        expect(newData.companyUuid).toEqual(dummyCompany.uuid);
       });
     });
   });
@@ -94,11 +93,13 @@ describe('Issuer service', () => {
           name: 'ACME, Inc.',
           unumIdCustomerUuid: '8125068d-e8c9-4706-83a0-be1485bf7265'
         };
-        await supertest(app).post('/company').send(companyOptions);
+        const companyResponse = await supertest(app).post('/company').send(companyOptions);
 
         const options = {
           name: 'ACME Inc. TEST Issuer',
-          holderUriScheme: 'acme://'
+          holderUriScheme: 'acme://',
+          companyUuid: companyResponse.body.uuid,
+          issuerApiKey: 'VjYaaxArxZP+EdvatoHz7hRZCE8wS3g+yBNhqJpCkrY='
         };
 
         const issuerResponse = await supertest(app).post('/issuer').send(options);

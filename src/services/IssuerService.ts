@@ -17,13 +17,12 @@ export async function registerIssuer (ctx: HookContext): Promise<HookContext> {
 
   const companyService = ctx.app.service('company');
 
-  const companyList = await companyService.find();
-  const company = companyList[0];
+  const company = await companyService.get(data.companyUuid);
 
   const url = `${config.ISSUER_URL}/api/register`;
   const issuerOptions = {
     ...data,
-    apiKey: company.unumIdApiKey,
+    apiKey: data.issuerApiKey,
     customerUuid: company.unumIdCustomerUuid
   };
 
@@ -37,7 +36,7 @@ export async function registerIssuer (ctx: HookContext): Promise<HookContext> {
       did: response.data.did,
       authToken: response.headers['x-auth-token'],
       uriScheme: data.holderUriScheme,
-      companyUuid: company.uuid
+      companyUuid: data.companyUuid
     }
   };
 }
