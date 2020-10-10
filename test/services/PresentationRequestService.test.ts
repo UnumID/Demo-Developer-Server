@@ -33,11 +33,6 @@ describe('PresentationRequest service', () => {
 
       const now = new Date();
 
-      const issuerOptions = {
-        name: 'ACME Inc. TEST Issuer',
-        holderUriScheme: 'acme://'
-      };
-
       const mockReturnedIssuer = {
         uuid: uuidv4(),
         createdAt: now,
@@ -114,6 +109,13 @@ describe('PresentationRequest service', () => {
           .mockReturnValueOnce({ data: mockReturnedIssuer, headers: mockReturnedHeaders })
           .mockReturnValueOnce({ data: mockReturnedVerifier, headers: mockReturnedHeaders })
           .mockReturnValueOnce({ data: mockReturnedRequest, headers: mockReturnedHeaders });
+
+        const issuerOptions = {
+          name: 'ACME Inc. TEST Issuer',
+          holderUriScheme: 'acme://',
+          companyUuid: companyResponse.body.uuid,
+          issuerApiKey: 'VjYaaxArxZP+EdvatoHz7hRZCE8wS3g+yBNhqJpCkrY='
+        };
 
         const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
 

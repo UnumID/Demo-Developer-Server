@@ -181,7 +181,9 @@ describe('IssuedCredential service', () => {
 
           const issuerOptions = {
             name: 'ACME Inc. TEST Issuer',
-            holderUriScheme: 'acme://'
+            holderUriScheme: 'acme://',
+            companyUuid: companyResponse.body.uuid,
+            issuerApiKey: 'VjYaaxArxZP+EdvatoHz7hRZCE8wS3g+yBNhqJpCkrY='
           };
 
           const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
