@@ -21,21 +21,12 @@ export class PresentationRequestService {
     const issuer = await issuerService.get(data.issuerUuid);
     const verifier = await verifierService.get(data.verifierUuid);
 
-    const presentationUrl = `${config.BASE_URL}/presentation?verifier=${verifier.uuid}`;
     const options = {
-      verifier: {
-        name: verifier.name,
-        did: verifier.did,
-        url: presentationUrl
-      },
+      verifier: verifier.did,
       credentialRequests: data.credentialTypes.map(credentialType => ({
         type: credentialType,
         required: true,
-        issuers: [{
-          did: issuer.did,
-          name: issuer.name,
-          required: true
-        }]
+        issuers: [issuer.did]
       })),
       eccPrivateKey: verifier.privateKey
     };

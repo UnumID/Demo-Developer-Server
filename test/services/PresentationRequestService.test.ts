@@ -143,19 +143,11 @@ describe('PresentationRequest service', () => {
 
       it('sends the request', () => {
         const expected = {
-          verifier: {
-            name: mockReturnedVerifier.name,
-            did: mockReturnedVerifier.did,
-            url: `${config.BASE_URL}/presentation?verifier=${verifier.uuid}`
-          },
+          verifier: mockReturnedVerifier.did,
           credentialRequests: [{
             type: 'TestCredential',
             required: true,
-            issuers: [{
-              did: mockReturnedIssuer.did,
-              name: mockReturnedIssuer.name,
-              required: true
-            }]
+            issuers: [mockReturnedIssuer.did]
           }],
           eccPrivateKey: mockReturnedVerifier.keys.privateKey
         };
