@@ -2,6 +2,7 @@ import { Entity, Property, ManyToOne } from 'mikro-orm';
 
 import { BaseEntity, BaseEntityOptions } from './BaseEntity';
 import { Company } from './Company';
+import { config } from '../config';
 
 export interface VerifierOptions extends BaseEntityOptions {
   name: string;
@@ -28,6 +29,9 @@ export class Verifier extends BaseEntity {
   @ManyToOne(() => Company)
   companyUuid: string;
 
+  @Property()
+  url: string;
+
   constructor (options: VerifierOptions) {
     super(options);
     const {
@@ -43,5 +47,6 @@ export class Verifier extends BaseEntity {
     this.authToken = authToken;
     this.name = name;
     this.companyUuid = companyUuid;
+    this.url = `${config.BASE_URL}/presentation`;
   }
 }

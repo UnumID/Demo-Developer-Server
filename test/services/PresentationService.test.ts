@@ -2,7 +2,6 @@ import { Server } from 'http';
 import supertest from 'supertest';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import { BadRequest } from '@feathersjs/errors';
 
 import generateApp from '../../src/generate-app';
 import { Presentation, NoPresentation } from '../../src/types';
@@ -29,6 +28,7 @@ describe('PresentationService', () => {
     let server: Server;
     let verifier: Verifier;
     let mockReturnedHeaders;
+    let requestUuid;
 
     beforeAll(async () => {
       // set up app and wait until server is ready
@@ -65,6 +65,7 @@ describe('PresentationService', () => {
         did: `did:unum:${uuidv4()}`,
         customerUuid: companyOptions.unumIdCustomerUuid,
         name: 'ACME Inc. TEST Verifier',
+        url: `${config.BASE_URL}/presentation`,
         keys: {
           privateKey: '-----BEGIN EC PRIVATE KEY-----MHcCAQEEIIFtwDWUzCbfeikEgD4m6G58hQo51d2Qz6bL11AHDMbDoAoGCCqGSM49AwEHoUQDQgAEwte3H5BXDcJy+4z4avMsNuqXFGYfL3ewcU0pe+UrYbhh6B7oCdvSPocO55BZO5pAOF/qxa/NhwixxqFf9eWVFg==-----END EC PRIVATE KEY-----'
         }
@@ -84,8 +85,44 @@ describe('PresentationService', () => {
         }
       };
 
+      requestUuid = uuidv4();
+      const mockReturnedRequest = {
+        uuid: requestUuid,
+        createdAt: now,
+        updatedAt: now,
+        expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
+        verifier: {
+          name: 'ACME, Inc. Verifier',
+          did: mockReturnedVerifier.did,
+          url: `${config.BASE_URL}/presentation?verifier=${mockReturnedVerifier.uuid}`
+        },
+        credentialRequests: [
+          {
+            type: 'TestCredential',
+            required: true,
+            issuers: [
+              {
+                did: mockReturnedIssuer.did,
+                name: 'ACME Inc. TEST Issuer',
+                required: true
+              }
+            ]
+          }
+        ],
+        proof: {
+          created: now,
+          signatureValue: '381yXYvTZfvdFgv9yRj8vTdQUXPi5w1HSm2QREFNgq3R1o7KbvDqiCcv62kGzkD2Kgq7pvW4WRaRqjV12v3zcxFLXbzGSi4z',
+          type: 'secp256r1Signature2020',
+          verificationMethod: mockReturnedVerifier.did,
+          proofPurpose: 'AssertionMethod'
+        },
+        metadata: {},
+        deeplink: `acme:///unumid-holder/presentationRequest/${requestUuid}`
+      };
+
       mockAxiosPost.mockReturnValueOnce({ data: mockReturnedVerifier, headers: mockReturnedHeaders });
       mockAxiosPost.mockReturnValueOnce({ data: mockReturnedIssuer, headers: mockReturnedHeaders });
+      mockAxiosPost.mockReturnValueOnce({ data: mockReturnedRequest, headers: mockReturnedHeaders });
 
       // seed the db with the other objects we'll need
       const verifierOptions = {
@@ -107,9 +144,17 @@ describe('PresentationService', () => {
 
       const verifierResponse = await supertest(app).post('/verifier').send(verifierOptions);
       await supertest(app).post('/user').send(userOptions);
-      await supertest(app).post('/issuer').send(issuerOptions);
+      const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
 
       verifier = verifierResponse.body;
+
+      const presentationRequestOptions = {
+        verifierUuid: verifier.uuid,
+        issuerUuid: issuerResponse.body.uuid,
+        credentialTypes: ['TestCredential']
+      };
+
+      await supertest(app).post('/presentationRequest').send(presentationRequestOptions);
 
       presentation = {
         '@context': [
@@ -147,7 +192,7 @@ describe('PresentationService', () => {
             }
           }
         ],
-        presentationRequestUuid: '0cebee3b-3295-4ef6-a4d6-7dfea413b3aa',
+        presentationRequestUuid: requestUuid,
         proof: {
           created: '2020-09-03T18:50:52.105Z',
           signatureValue: 'iKx1CJLYue7vopUo2fqGps3TWmxqRxoBDTupumLkaNp2W3UeAjwLUf5WxLRCRkDzEFeKCgT7JdF5fqbpvqnBZoHyYzWYbmW4YQ',
@@ -163,18 +208,8 @@ describe('PresentationService', () => {
     });
 
     describe('post', () => {
-      it('throws if not given the verifier query param', async () => {
-        try {
-          await supertest(app).post('/presentation').send(presentation);
-        } catch (e) {
-          expect(e).toEqual(new BadRequest('Verifier query param is required.'));
-        }
-      });
-
       it('sends the presentation to the verifier app for verification', async () => {
-        await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
-        const expectedUrl = `${config.VERIFIER_URL}/api/verifyPresentation`;
-        const expectedHeaders = { Authorization: `Bearer ${verifier.authToken}` };
+        await supertest(app).post('/presentation').send(presentation);
         const expectedData = {
           ...presentation,
           verifiableCredential: [{
@@ -183,18 +218,19 @@ describe('PresentationService', () => {
           }]
         };
 
-        expect((axios.post as jest.Mock)).toBeCalledWith(expectedUrl, expectedData, { headers: expectedHeaders });
+        const received = mockAxiosPost.mock.calls[3][1];
+        expect(received).toEqual(expectedData);
       });
 
       it('returns a success response if the presentation is valid', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
+        const response = await supertest(app).post('/presentation').send(presentation);
         expect(response.body).toEqual({ isVerified: true, type: 'VerifiablePresentation' });
       });
 
       it('saves the shared credentials contained in the presentation', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
-        await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
+        await supertest(app).post('/presentation').send(presentation);
 
         const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send();
 
@@ -211,35 +247,39 @@ describe('PresentationService', () => {
       });
 
       describe('handling a NoPresentation', () => {
-        const noPresentation: NoPresentation = {
-          type: ['NoPresentation'],
-          presentationRequestUuid: '0cebee3b-3295-4ef6-a4d6-7dfea413b3aa',
-          proof: {
-            created: '2020-09-03T18:50:52.105Z',
-            signatureValue: 'iKx1CJLYue7vopUo2fqGps3TWmxqRxoBDTupumLkaNp2W3UeAjwLUf5WxLRCRkDzEFeKCgT7JdF5fqbpvqnBZoHyYzWYbmW4YQ',
-            type: 'secp256r1Signature2020',
-            verificationMethod: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8#1e126861-a51b-491f-9206-e2c6b8639fd1',
-            proofPurpose: 'AssertionMethod'
-          },
-          holder: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8'
-        };
+        let noPresentation: NoPresentation;
+
+        beforeEach(() => {
+          noPresentation = {
+            type: ['NoPresentation'],
+            presentationRequestUuid: requestUuid,
+            proof: {
+              created: '2020-09-03T18:50:52.105Z',
+              signatureValue: 'iKx1CJLYue7vopUo2fqGps3TWmxqRxoBDTupumLkaNp2W3UeAjwLUf5WxLRCRkDzEFeKCgT7JdF5fqbpvqnBZoHyYzWYbmW4YQ',
+              type: 'secp256r1Signature2020',
+              verificationMethod: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8#1e126861-a51b-491f-9206-e2c6b8639fd1',
+              proofPurpose: 'AssertionMethod'
+            },
+            holder: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8'
+          };
+        });
 
         it('returns a success response if the NoPresentation is valid', async () => {
           (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: true } });
-          const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(noPresentation);
+          const response = await supertest(app).post('/presentation').send(noPresentation);
           expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation' });
         });
 
         it('returns a 400 status code if the NoPresentation is not verified', async () => {
           (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false } });
-          const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(noPresentation);
+          const response = await supertest(app).post('/presentation').send(noPresentation);
           expect(response.status).toEqual(400);
         });
       });
 
       it('returns 400 status code if the Presentation is not verified', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: false }, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentation').query({ verifier: verifier.uuid }).send(presentation);
+        const response = await supertest(app).post('/presentation').send(presentation);
         expect(response.status).toEqual(400);
       });
     });

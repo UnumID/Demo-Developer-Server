@@ -1,16 +1,17 @@
 import { MikroORM } from 'mikro-orm';
 
-import config from '../../src/mikro-orm.config';
+import mikroOrmConfig from '../../src/mikro-orm.config';
 import { Verifier, VerifierOptions } from '../../src/entities/Verifier';
 import { Company } from '../../src/entities/Company';
 import { resetDb } from '../resetDb';
+import { config } from '../../src/config';
 
 describe('Verifier entity', () => {
   let options: VerifierOptions;
   let orm;
 
   beforeEach(async () => {
-    orm = await MikroORM.init(config);
+    orm = await MikroORM.init(mikroOrmConfig);
     const repository = orm.em.getRepository(Company);
 
     const companyOptions = {
@@ -52,6 +53,11 @@ describe('Verifier entity', () => {
       expect(verifier.privateKey).toEqual(options.privateKey);
       expect(verifier.authToken).toEqual(options.authToken);
       expect(verifier.companyUuid).toEqual(options.companyUuid);
+    });
+
+    it('sets the url', () => {
+      const verifier = new Verifier(options);
+      expect(verifier.url).toEqual(`${config.BASE_URL}/presentation`);
     });
   });
 

@@ -24,6 +24,7 @@ describe('PresentationRequest service', () => {
       let server: Server;
       let app: Application;
       let verifier: Verifier;
+      let presentationRequestResponse;
 
       const companyOptions = {
         unumIdApiKey: '3n5jhT2vXDEEXlRj09oI9pP6DmWNXNCghUMC/ybK2Lw=',
@@ -133,7 +134,7 @@ describe('PresentationRequest service', () => {
           credentialTypes: ['TestCredential']
         };
 
-        await supertest(app).post('/presentationRequest').send(options);
+        presentationRequestResponse = await supertest(app).post('/presentationRequest').send(options);
       });
 
       afterAll(async () => {
@@ -152,6 +153,11 @@ describe('PresentationRequest service', () => {
           eccPrivateKey: mockReturnedVerifier.keys.privateKey
         };
         expect((axios.post as jest.Mock).mock.calls[2][1]).toEqual(expected);
+      });
+
+      it('saves the request in the database', async () => {
+        const getResponse = await supertest(app).get(`/presentationRequest/${presentationRequestResponse.body.uuid}`);
+        expect(getResponse.status).toEqual(200);
       });
     });
   });
