@@ -11,6 +11,7 @@ import { User } from './entities/User';
 import { IssuedCredential } from './entities/IssuedCredential';
 import { Verifier } from './entities/Verifier';
 import { SharedCredential } from './entities/SharedCredential';
+import { PresentationRequest } from './entities/PresentationRequest';
 
 export const mikro = {} as Mikro;
 
@@ -24,6 +25,7 @@ export async function initMikroOrm (app: Application): Promise<void> {
   mikro.issuedCredentialRepository = mikro.em.getRepository(IssuedCredential);
   mikro.verifierRepository = mikro.em.getRepository(Verifier);
   mikro.sharedCredentialRepository = mikro.em.getRepository(SharedCredential);
+  mikro.presentationRequestRepository = mikro.em.getRepository(PresentationRequest);
 
   app.use((req, res, next) => RequestContext.create(mikro.orm.em, next));
   app.mikro = mikro; // eslint-disable-line no-param-reassign

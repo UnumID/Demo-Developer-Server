@@ -1,4 +1,4 @@
-import { ServiceAddons, Params } from '@feathersjs/feathers';
+import { ServiceAddons } from '@feathersjs/feathers';
 import { BadRequest } from '@feathersjs/errors';
 import axios from 'axios';
 
@@ -19,15 +19,13 @@ export function isPresentation (presentation: PresentationOrNoPresentation): pre
 export class PresentationService {
   private app!: Application;
 
-  async create (presentation: PresentationOrNoPresentation, params: Params): Promise<VerificationResponse> {
-    const verifierUuid = params.query?.verifier;
+  async create (presentation: PresentationOrNoPresentation): Promise<VerificationResponse> {
+    const { presentationRequestUuid } = presentation;
 
-    if (!verifierUuid) {
-      throw new BadRequest('Verifier query param is required.');
-    }
-
+    const presentationRequestService = this.app.service('presentationRequest');
+    const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
+    const verifier = presentationRequest._verifier;
     const verifierService = this.app.service('verifier');
-    const verifier = await verifierService.get(verifierUuid);
 
     // verify presentation
     const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
@@ -56,7 +54,7 @@ export class PresentationService {
     // update the verifier's auth token if it was reissued
     const authTokenResponse = response.headers['x-auth-token'];
     if (authTokenResponse !== verifier.authToken) {
-      await verifierService.patch(verifierUuid, { authToken: authTokenResponse });
+      await verifierService.patch(verifier.uuid, { authToken: authTokenResponse });
     }
 
     // return early if the presentation could not be verified
@@ -77,7 +75,7 @@ export class PresentationService {
       const user = await userService.get(null, { where: { did: credential.credentialSubject.id.split('#')[0] } });
 
       const options = {
-        verifierUuid,
+        verifierUuid: verifier.uuid,
         issuerUuid: issuer.uuid,
         userUuid: user.uuid,
         credential

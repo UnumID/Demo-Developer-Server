@@ -9,6 +9,7 @@ import generateApp from '../../src/generate-app';
 import { registerVerifier } from '../../src/services/VerifierService';
 import { Verifier } from '../../src/entities/Verifier';
 import { resetDb } from '../resetDb';
+import { config } from '../../src/config';
 
 jest.mock('axios');
 describe('Verifier service', () => {
@@ -47,6 +48,7 @@ describe('Verifier service', () => {
       createdAt: now,
       updatedAt: now,
       did: `did:unum:${uuidv4()}`,
+      url: `${config.BASE_URL}/presentation`,
       customerUuid: dummyCompany.unumIdCustomerUuid,
       name: 'ACME Inc. TEST Verifier',
       keys: {
