@@ -58,13 +58,13 @@ export default function (app: Application): void {
     throw new Error('error configuring IssuerService, repository is not properly initialized');
   }
 
-  const companyService = createService({
+  const issuerService = createService({
     repository,
     Entity: Issuer,
     name: 'Issuer'
   });
 
-  app.use('/issuer', companyService);
+  app.use('/issuer', issuerService);
   const service = app.service('issuer');
   service.hooks(hooks);
 }
