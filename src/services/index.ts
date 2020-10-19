@@ -7,6 +7,7 @@ import verifier from './VerifierService';
 import presentationRequest from './PresentationRequestService';
 import presentation from './PresentationService';
 import sharedCredential from './SharedCredentialService';
+import holderApp from './HolderAppService';
 
 export default function (app: Application): void {
   app.configure(company);
@@ -17,4 +18,5 @@ export default function (app: Application): void {
   app.configure(presentationRequest);
   app.configure(presentation);
   app.configure(sharedCredential);
+  app.configure(holderApp);
 }

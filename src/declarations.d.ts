@@ -7,6 +7,7 @@ import { IssuedCredential } from './entities/IssuedCredential';
 import { Verifier } from './entities/Verifier';
 import { SharedCredential } from './entities/SharedCredential';
 import { PresentationRequest } from './entities/PresentationRequest';
+import { HolderApp } from './entities/HolderApp';
 
 // A mapping of service names to types. Will be extended in service files.
 export interface ServiceTypes {} // eslint-disable-line @typescript-eslint/no-empty-interface
@@ -21,6 +22,7 @@ export interface Mikro {
   verifierRepository: EntityRepository<Verifier>;
   sharedCredentialRepository: EntityRepository<SharedCredential>;
   presentationRequestRepository: EntityRepository<PresentationRequest>;
+  holderAppRepository: EntityRepository<HolderApp>;
 }
 
 // The application instance type that will be used everywhere else
