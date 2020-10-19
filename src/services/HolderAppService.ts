@@ -22,7 +22,7 @@ export async function registerHolderApp (ctx: HookContext): Promise<HookContext>
   const saasHolderAppOptions = {
     name: data.name,
     uriScheme: data.uriScheme,
-    customerUuid: company.unumIdCustomerUuid,
+    customerUuid: company.unumIdCustomerUuid
   };
 
   const headers = { Authorization: `Bearer ${data.apiKey}` };
