@@ -9,6 +9,7 @@ import { Application } from '../../src/declarations';
 import { Verifier } from '../../src/entities/Verifier';
 import { config } from '../../src/config';
 import { resetDb } from '../resetDb';
+import { HolderApp } from '../../src/entities/HolderApp';
 
 jest.mock('axios');
 const mockAxiosPost = axios.post as jest.Mock;
@@ -27,6 +28,7 @@ describe('PresentationService', () => {
     let app: Application;
     let server: Server;
     let verifier: Verifier;
+    let holderApp: HolderApp;
     let mockReturnedHeaders;
     let requestUuid;
 
@@ -85,6 +87,15 @@ describe('PresentationService', () => {
         }
       };
 
+      const mockReturnedHolderApp = {
+        uuid: uuidv4(),
+        createdAt: now,
+        updatedAt: now,
+        customerUuid: companyOptions.unumIdCustomerUuid,
+        name: 'ACME Inc. TEST Holder App',
+        uriScheme: 'acme://'
+      };
+
       requestUuid = uuidv4();
       const mockReturnedRequest = {
         uuid: requestUuid,
@@ -117,12 +128,14 @@ describe('PresentationService', () => {
           proofPurpose: 'AssertionMethod'
         },
         metadata: {},
-        deeplink: `acme:///unumid-holder/presentationRequest/${requestUuid}`
+        deeplink: `acme:///unumid-holder/presentationRequest/${requestUuid}`,
+        holderAppUuid: mockReturnedHolderApp.uuid
       };
 
-      mockAxiosPost.mockReturnValueOnce({ data: mockReturnedVerifier, headers: mockReturnedHeaders });
-      mockAxiosPost.mockReturnValueOnce({ data: mockReturnedIssuer, headers: mockReturnedHeaders });
-      mockAxiosPost.mockReturnValueOnce({ data: mockReturnedRequest, headers: mockReturnedHeaders });
+      mockAxiosPost.mockReturnValueOnce({ data: mockReturnedVerifier, headers: mockReturnedHeaders })
+        .mockReturnValueOnce({ data: mockReturnedIssuer, headers: mockReturnedHeaders })
+        .mockReturnValueOnce({ data: mockReturnedHolderApp })
+        .mockReturnValueOnce({ data: mockReturnedRequest, headers: mockReturnedHeaders });
 
       // seed the db with the other objects we'll need
       const verifierOptions = {
@@ -148,10 +161,21 @@ describe('PresentationService', () => {
 
       verifier = verifierResponse.body;
 
+      const holderAppOptions = {
+        name: 'ACME Inc. TEST Holder App',
+        uriScheme: 'acme://',
+        companyUuid: companyResponse.body.uuid,
+        apiKey: 'J6A5J3FEJXi+2Xh6JUWpXl5+318dfi1kcwxnMMQKrfc='
+      };
+
+      const holderAppResponse = await supertest(app).post('/holderApp').send(holderAppOptions);
+      holderApp = holderAppResponse.body;
+
       const presentationRequestOptions = {
         verifierUuid: verifier.uuid,
         issuerUuid: issuerResponse.body.uuid,
-        credentialTypes: ['TestCredential']
+        credentialTypes: ['TestCredential'],
+        holderAppUuid: holderApp.uuid
       };
 
       await supertest(app).post('/presentationRequest').send(presentationRequestOptions);
@@ -218,7 +242,7 @@ describe('PresentationService', () => {
           }]
         };
 
-        const received = mockAxiosPost.mock.calls[3][1];
+        const received = mockAxiosPost.mock.calls[4][1];
         expect(received).toEqual(expectedData);
       });
 
