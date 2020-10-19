@@ -5,7 +5,6 @@ export interface BaseEntityOptions {
   uuid?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  [key: string]: unknown;
 }
 
 export abstract class BaseEntity implements UuidEntity<BaseEntity> {
