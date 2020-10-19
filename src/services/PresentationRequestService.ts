@@ -18,9 +18,11 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
 
   const issuerService = app.service('issuer');
   const verifierService = app.service('verifier');
+  const holderAppService = app.service('holderApp');
 
   const issuer = await issuerService.get(data.issuerUuid);
   const verifier = await verifierService.get(data.verifierUuid);
+  const holderApp = await holderAppService.get(data.holderAppUuid);
 
   const options = {
     verifier: verifier.did,
@@ -29,7 +31,8 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
       required: true,
       issuers: [issuer.did]
     })),
-    eccPrivateKey: verifier.privateKey
+    eccPrivateKey: verifier.privateKey,
+    holderAppUuid: data.holderAppUuid
   };
 
   const url = `${config.VERIFIER_URL}/api/sendRequest`;
@@ -46,7 +49,8 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
     ...ctx,
     data: {
       ...response.data,
-      verifier
+      verifier,
+      holderApp
     }
   };
 }

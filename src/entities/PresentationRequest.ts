@@ -3,6 +3,7 @@ import { Entity, Property, ManyToOne } from 'mikro-orm';
 import { BaseEntity, BaseEntityOptions } from './BaseEntity';
 import { Proof } from '../types';
 import { Verifier } from './Verifier';
+import { HolderApp } from './HolderApp';
 
 export interface CredentialRequest {
   type: string; // the type of credential being requested
@@ -15,6 +16,7 @@ export interface PresentationRequestOptions extends BaseEntityOptions {
   credentialRequests: CredentialRequest[];
   proof: Proof;
   metadata?: Record<string, unknown>
+  holderApp: HolderApp
 }
 
 @Entity()
@@ -36,6 +38,9 @@ export class PresentationRequest extends BaseEntity {
   @ManyToOne(() => Verifier, { joinColumn: 'verifierUuid' })
   _verifier: Verifier
 
+  @ManyToOne(() => HolderApp, { joinColumn: 'holderAppUuid' })
+  holderApp: HolderApp
+
   constructor (options: PresentationRequestOptions) {
     super(options);
 
@@ -43,5 +48,6 @@ export class PresentationRequest extends BaseEntity {
     this.credentialRequests = options.credentialRequests;
     this.proof = options.proof;
     this.metadata = options.metadata;
+    this.holderApp = options.holderApp;
   }
 }

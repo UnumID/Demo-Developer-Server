@@ -8,6 +8,7 @@ import { resetDb } from '../resetDb';
 import { Application } from '../../src/declarations';
 import { config } from '../../src/config';
 import { Verifier } from '../../src/entities/Verifier';
+import { HolderApp } from '../../src/entities/HolderApp';
 
 jest.mock('axios');
 describe('PresentationRequest service', () => {
@@ -24,6 +25,7 @@ describe('PresentationRequest service', () => {
       let server: Server;
       let app: Application;
       let verifier: Verifier;
+      let holderApp: HolderApp;
       let presentationRequestResponse;
 
       const companyOptions = {
@@ -58,6 +60,15 @@ describe('PresentationRequest service', () => {
         keys: {
           privateKey: '-----BEGIN EC PRIVATE KEY-----MHcCAQEEIIFtwDWUzCbfeikEgD4m6G58hQo51d2Qz6bL11AHDMbDoAoGCCqGSM49AwEHoUQDQgAEwte3H5BXDcJy+4z4avMsNuqXFGYfL3ewcU0pe+UrYbhh6B7oCdvSPocO55BZO5pAOF/qxa/NhwixxqFf9eWVFg==-----END EC PRIVATE KEY-----'
         }
+      };
+
+      const mockReturnedHolderApp = {
+        uuid: uuidv4(),
+        createdAt: now,
+        updatedAt: now,
+        customerUuid: companyOptions.unumIdCustomerUuid,
+        name: 'ACME Inc. TEST Holder App',
+        uriScheme: 'acme://'
       };
 
       const mockReturnedHeaders = {
@@ -96,7 +107,8 @@ describe('PresentationRequest service', () => {
           proofPurpose: 'AssertionMethod'
         },
         metadata: {},
-        deeplink: `acme:///unumid-holder/presentationRequest/${requestUuid}`
+        deeplink: `acme:///unumid-holder/presentationRequest/${requestUuid}`,
+        holderAppUuid: mockReturnedHolderApp.uuid
       };
 
       beforeAll(async () => {
@@ -109,6 +121,7 @@ describe('PresentationRequest service', () => {
         (axios.post as jest.Mock)
           .mockReturnValueOnce({ data: mockReturnedIssuer, headers: mockReturnedHeaders })
           .mockReturnValueOnce({ data: mockReturnedVerifier, headers: mockReturnedHeaders })
+          .mockReturnValueOnce({ data: mockReturnedHolderApp })
           .mockReturnValueOnce({ data: mockReturnedRequest, headers: mockReturnedHeaders });
 
         const issuerOptions = {
@@ -128,10 +141,21 @@ describe('PresentationRequest service', () => {
         const verifierResponse = await supertest(app).post('/verifier').send(verifierOptions);
         verifier = verifierResponse.body;
 
+        const holderAppOptions = {
+          name: 'ACME Inc. TEST Holder App',
+          uriScheme: 'acme://',
+          companyUuid: companyResponse.body.uuid,
+          apiKey: 'J6A5J3FEJXi+2Xh6JUWpXl5+318dfi1kcwxnMMQKrfc='
+        };
+
+        const holderAppResponse = await supertest(app).post('/holderApp').send(holderAppOptions);
+        holderApp = holderAppResponse.body;
+
         const options = {
           verifierUuid: verifier.uuid,
           issuerUuid: issuerResponse.body.uuid,
-          credentialTypes: ['TestCredential']
+          credentialTypes: ['TestCredential'],
+          holderAppUuid: holderApp.uuid
         };
 
         presentationRequestResponse = await supertest(app).post('/presentationRequest').send(options);
@@ -150,9 +174,10 @@ describe('PresentationRequest service', () => {
             required: true,
             issuers: [mockReturnedIssuer.did]
           }],
-          eccPrivateKey: mockReturnedVerifier.keys.privateKey
+          eccPrivateKey: mockReturnedVerifier.keys.privateKey,
+          holderAppUuid: holderApp.uuid
         };
-        expect((axios.post as jest.Mock).mock.calls[2][1]).toEqual(expected);
+        expect((axios.post as jest.Mock).mock.calls[3][1]).toEqual(expected);
       });
 
       it('saves the request in the database', async () => {
