@@ -8,7 +8,6 @@ export interface IssuerOptions extends BaseEntityOptions {
   did: string;
   privateKey: string;
   authToken: string;
-  uriScheme: string;
   companyUuid: string;
 }
 
@@ -24,9 +23,6 @@ export class Issuer extends BaseEntity {
   authToken: string;
 
   @Property()
-  uriScheme: string;
-
-  @Property()
   name: string;
 
   @ManyToOne(() => Company)
@@ -39,14 +35,12 @@ export class Issuer extends BaseEntity {
       did,
       privateKey,
       authToken,
-      uriScheme,
       companyUuid
     } = options;
 
     this.did = did;
     this.privateKey = privateKey;
     this.authToken = authToken;
-    this.uriScheme = uriScheme;
     this.name = name;
     this.companyUuid = companyUuid;
   }

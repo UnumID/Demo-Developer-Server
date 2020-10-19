@@ -24,7 +24,6 @@ describe('Issuer entity', () => {
     options = {
       name: 'ACME, Inc. Issuer',
       did: 'did:unum:e9305322-f642-45c4-9efc-cf4f5326cd6a',
-      uriScheme: 'acme://',
       privateKey: '-----BEGIN EC PRIVATE KEY-----MHcCAQEEIIFtwDWUzCbfeikEgD4m6G58hQo51d2Qz6bL11AHDMbDoAoGCCqGSM49AwEHoUQDQgAEwte3H5BXDcJy+4z4avMsNuqXFGYfL3ewcU0pe+UrYbhh6B7oCdvSPocO55BZO5pAOF/qxa/NhwixxqFf9eWVFg==-----END EC PRIVATE KEY-----',
       authToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoidmVyaWZpZXIiLCJ1dWlkIjoiM2VjYzVlZDMtZjdhMC00OTU4LWJjOTgtYjc5NTQxMThmODUyIiwiZGlkIjoiZGlkOnVudW06ZWVhYmU0NGItNjcxMi00NTRkLWIzMWItNTM0NTg4NTlmMTFmIiwiZXhwIjoxNTk1NDcxNTc0LjQyMiwiaWF0IjoxNTk1NTI5NTExfQ.4iJn_a8fHnVsmegdR5uIsdCjXmyZ505x1nA8NVvTEBg',
       companyUuid: company.uuid
@@ -51,7 +50,6 @@ describe('Issuer entity', () => {
       const issuer = new Issuer(options);
       expect(issuer.name).toEqual(options.name);
       expect(issuer.did).toEqual(options.did);
-      expect(issuer.uriScheme).toEqual(options.uriScheme);
       expect(issuer.privateKey).toEqual(options.privateKey);
       expect(issuer.authToken).toEqual(options.authToken);
       expect(issuer.companyUuid).toEqual(options.companyUuid);

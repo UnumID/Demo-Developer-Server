@@ -23,7 +23,8 @@ export async function registerVerifier (ctx: HookContext): Promise<HookContext> 
   const verifierOptions = {
     ...data,
     apiKey: data.verifierApiKey,
-    customerUuid: company.unumIdCustomerUuid
+    customerUuid: company.unumIdCustomerUuid,
+    url
   };
 
   const response = await axios.post(url, verifierOptions);

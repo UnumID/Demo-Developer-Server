@@ -35,7 +35,6 @@ export async function registerIssuer (ctx: HookContext): Promise<HookContext> {
       privateKey: response.data.keys.signing.privateKey,
       did: response.data.did,
       authToken: response.headers['x-auth-token'],
-      uriScheme: data.holderUriScheme,
       companyUuid: data.companyUuid
     }
   };
