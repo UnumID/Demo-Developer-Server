@@ -28,8 +28,7 @@ describe('Issuer service', () => {
       service: mockService
     },
     data: {
-      name: 'ACME Inc. TEST Issuer',
-      holderUriScheme: 'acme://'
+      name: 'ACME Inc. TEST Issuer'
     }
   } as unknown as HookContext;
 
@@ -97,7 +96,6 @@ describe('Issuer service', () => {
 
         const options = {
           name: 'ACME Inc. TEST Issuer',
-          holderUriScheme: 'acme://',
           companyUuid: companyResponse.body.uuid,
           issuerApiKey: 'VjYaaxArxZP+EdvatoHz7hRZCE8wS3g+yBNhqJpCkrY='
         };

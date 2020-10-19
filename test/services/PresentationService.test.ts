@@ -145,8 +145,7 @@ describe('PresentationService', () => {
 
       const issuerOptions = {
         name: 'ACME Inc. TEST Issuer',
-        companyUuid: companyResponse.body.uuid,
-        holderUriScheme: 'acme://'
+        companyUuid: companyResponse.body.uuid
       };
 
       const userOptions = {
