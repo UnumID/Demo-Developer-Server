@@ -48,7 +48,11 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
   return {
     ...ctx,
     data: {
-      ...response.data,
+      ...response.data.presentationRequest,
+      verifierInfo: response.data.verifier,
+      issuers: response.data.issuers,
+      deeplink: response.data.deeplink,
+      qrCode: response.data.qrCode,
       verifier,
       holderApp
     }
