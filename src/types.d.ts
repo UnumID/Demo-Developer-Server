@@ -40,3 +40,18 @@ export interface NoPresentation {
 }
 
 export type PresentationOrNoPresentation = Presentation | NoPresentation;
+
+export interface VerifierInfo {
+  name: string;
+  url: string;
+  did: string;
+}
+
+export interface IssuerInfo {
+  name: string;
+  did: string;
+}
+
+export interface IssuerInfoMap {
+  [did: string]: IssuerInfo;
+}
