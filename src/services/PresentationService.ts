@@ -24,7 +24,7 @@ export class PresentationService {
 
     const presentationRequestService = this.app.service('presentationRequest');
     const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
-    const verifier = presentationRequest._verifier;
+    const verifier = await presentationRequest._verifier.init();
     const verifierService = this.app.service('verifier');
 
     // verify presentation
@@ -47,7 +47,7 @@ export class PresentationService {
       return { isVerified: response.data.isVerified, type: 'NoPresentation' };
     }
 
-    const response = await axios.post(url, presentation, { headers });
+    const response = await axios.post(url, { presentation, verifier: verifier.did }, { headers });
 
     logger.info('response from verifier app', response.data);
 
