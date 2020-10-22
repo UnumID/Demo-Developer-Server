@@ -39,7 +39,7 @@ export class PresentationService {
 
       const noPresentationUrl = `${config.VERIFIER_URL}/api/verifyNoPresentation`;
 
-      const response = await axios.post(noPresentationUrl, presentation, { headers });
+      const response = await axios.post(noPresentationUrl, { noPresentation: presentation, verifier: verifier.did }, { headers });
 
       if (!response.data.isVerified) {
         throw new BadRequest('Verification failed.');
