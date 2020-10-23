@@ -251,11 +251,14 @@ describe('PresentationService', () => {
       it('sends the presentation to the verifier app for verification', async () => {
         await supertest(app).post('/presentation').send(presentation);
         const expectedData = {
-          ...presentation,
-          verifiableCredential: [{
-            ...presentation.verifiableCredential[0],
-            issuanceDate: '2020-09-03T18:42:30.645Z'
-          }]
+          presentation: {
+            ...presentation,
+            verifiableCredential: [{
+              ...presentation.verifiableCredential[0],
+              issuanceDate: '2020-09-03T18:42:30.645Z'
+            }]
+          },
+          verifier: verifier.did
         };
 
         const received = mockAxiosPost.mock.calls[4][1];
