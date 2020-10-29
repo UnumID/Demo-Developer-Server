@@ -75,7 +75,8 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - run:
           command: |
             echo Logging in to Amazon ECR...
