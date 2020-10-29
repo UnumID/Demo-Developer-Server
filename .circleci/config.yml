@@ -33,7 +33,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:12.7.0
+      - image: circleci/node:14.15.0
         environment:
           TEST_DB_NAME: circle_test
           TEST_DB_PORT: '5432'
