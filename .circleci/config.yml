@@ -8,7 +8,7 @@ orbs:
 jobs:
   lint:
     docker:
-      - image: circleci/node:12.7.0
+      - image: circleci/node:14.15.0
     steps:
       - checkout
       - restore_cache:
@@ -33,7 +33,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:12.7.0
+      - image: circleci/node:14.15.0
         environment:
           TEST_DB_NAME: circle_test
           TEST_DB_PORT: '5432'
@@ -75,7 +75,8 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - run:
           command: |
             echo Logging in to Amazon ECR...
