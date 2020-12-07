@@ -93,7 +93,7 @@ jobs:
     parameters:
       cluster-name:
         type: string
-        default: "test-customer-cluster-1"
+        default: "dev-customer-cluster"
       repo:
         type: string
       deployment:
