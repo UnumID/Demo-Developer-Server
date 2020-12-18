@@ -6,32 +6,7 @@ orbs:
   kubernetes: circleci/kubernetes@0.4.0
 
 jobs:
-  lint:
-    docker:
-      - image: circleci/node:14.15.0
-    steps:
-      - checkout
-      - restore_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}--{{ arch }}
-
-      - restore_cache:
-          key: node-v1-{{ checksum "package.json" }}--{{ arch }}
-
-      - run: yarn install
-
-      - save_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}--{{ arch }}
-          paths:
-            - .cache/yarn
-
-      - save_cache:
-          key: node-v1-{{ checksum "package.json" }}--{{ arch }}
-          paths:
-            - node_modules
-
-      - run: yarn lint
-
-  test:
+  lint-and-test-job:
     docker:
       - image: circleci/node:14.15.0
         environment:
@@ -59,6 +34,8 @@ jobs:
           key: node-v1-{{ checksum "package.json" }}--{{ arch }}
           paths:
             - node_modules
+      
+      - run: yarn lint
 
       - run:
           name: Jest Tests
@@ -116,15 +93,7 @@ jobs:
 workflows:
   lint-and-test:
     jobs:
-      - lint:
-          filters:
-            branches:
-              ignore:
-                - main
-                - test-circleci
-      - test:
-          requires:
-            - lint
+      - lint-and-test-job:
           filters:
             branches:
               ignore:
@@ -133,13 +102,9 @@ workflows:
 
   build-and-deploy:
     jobs:
-      - lint
-      - test:
-          requires:
-            - lint
       - build-and-push-image:
           requires:
-            - test
+            - lint-and-test-job
           context: AWS-Dev
           repo: test-customer-app
           filters:
