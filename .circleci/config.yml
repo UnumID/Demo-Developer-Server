@@ -185,9 +185,10 @@ workflows:
       - lint-and-test-job:
           filters:
             branches:
-              ignore:
+              only:
                 - main
                 - test-circleci
+
       - build-and-push-image:
           requires:
             - lint-and-test-job
@@ -198,6 +199,7 @@ workflows:
               only:
                 - main
                 - test-circleci
+                
       - deploy-image:
           requires:
             - build-and-push-image
