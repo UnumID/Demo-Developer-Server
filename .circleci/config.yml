@@ -182,6 +182,12 @@ workflows:
 
   build-and-deploy:
     jobs:
+      - lint-and-test-job:
+          filters:
+            branches:
+              ignore:
+                - main
+                - test-circleci
       - build-and-push-image:
           requires:
             - lint-and-test-job
