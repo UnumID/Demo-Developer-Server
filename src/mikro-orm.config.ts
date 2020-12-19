@@ -10,6 +10,7 @@ import { Verifier } from './entities/Verifier';
 import { SharedCredential } from './entities/SharedCredential';
 import { PresentationRequest } from './entities/PresentationRequest';
 import { HolderApp } from './entities/HolderApp';
+import { Username } from './entities/Username';
 
 export default {
   baseDir: process.cwd(),
@@ -28,7 +29,8 @@ export default {
     Verifier,
     SharedCredential,
     PresentationRequest,
-    HolderApp
+    HolderApp,
+    Username
   ],
   entitiesDirs: ['lib/entities'],
   entitiesDirsTs: ['src/entities'],
