@@ -8,6 +8,7 @@ import presentationRequest from './PresentationRequestService';
 import presentation from './PresentationService';
 import sharedCredential from './SharedCredentialService';
 import holderApp from './HolderAppService';
+import username from './UsernameService';
 
 export default function (app: Application): void {
   app.configure(company);
@@ -19,4 +20,5 @@ export default function (app: Application): void {
   app.configure(presentation);
   app.configure(sharedCredential);
   app.configure(holderApp);
+  app.configure(username);
 }
