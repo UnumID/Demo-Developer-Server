@@ -1,11 +1,10 @@
-import { property } from 'lodash';
 import { Entity, Property } from 'mikro-orm';
 
 import { BaseEntity, BaseEntityOptions } from './BaseEntity';
 
 export interface UsernameOptions extends BaseEntityOptions {
   username: string;
-};
+}
 
 @Entity()
 export class Username extends BaseEntity {
