@@ -55,3 +55,7 @@ export interface IssuerInfo {
 export interface IssuerInfoMap {
   [did: string]: IssuerInfo;
 }
+
+export interface SuccessResponse {
+  success: boolean;
+}
