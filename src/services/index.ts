@@ -10,6 +10,7 @@ import sharedCredential from './SharedCredentialService';
 import holderApp from './HolderAppService';
 import username from './UsernameService';
 import email from './EmailService';
+import sms from './SmsService';
 
 export default function (app: Application): void {
   app.configure(company);
@@ -23,4 +24,5 @@ export default function (app: Application): void {
   app.configure(holderApp);
   app.configure(username);
   app.configure(email);
+  app.configure(sms);
 }

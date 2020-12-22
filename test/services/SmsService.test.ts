@@ -10,11 +10,11 @@ import { resetDb } from '../resetDb';
 
 jest.mock('axios');
 
-describe('EmailService', () => {
+describe('SmsService', () => {
   describe('initializing the service', () => {
     it('registers with the app', async () => {
       const app = await generateApp();
-      const service = app.service('email');
+      const service = app.service('sms');
       expect(service).toBeDefined();
     });
   });
@@ -74,14 +74,13 @@ describe('EmailService', () => {
         await new Promise(resolve => server.close(resolve));
       });
 
-      it('sends the email', async () => {
+      it('sends the sms', async () => {
         const options = {
-          to: 'test@unumid.org',
-          subject: 'test subject',
-          htmlBody: '<h1>header</h1><div>test body</div>'
+          to: 'KL5-5555',
+          msg: 'test sms'
         };
 
-        const response = await supertest(app).post('/email').send(options);
+        const response = await supertest(app).post('/sms').send(options);
         expect(true).toBe(true);
         expect(axios.post).toBeCalled();
         expect(response.body).toEqual({ success: true });
