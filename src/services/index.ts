@@ -11,6 +11,7 @@ import holderApp from './HolderAppService';
 import username from './UsernameService';
 import email from './EmailService';
 import sms from './SmsService';
+import credentialStatus from './CredentialStatusService';
 
 export default function (app: Application): void {
   app.configure(company);
@@ -25,4 +26,5 @@ export default function (app: Application): void {
   app.configure(username);
   app.configure(email);
   app.configure(sms);
+  app.configure(credentialStatus);
 }
