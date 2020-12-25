@@ -25,6 +25,7 @@ export interface PresentationRequestOptions extends BaseEntityOptions {
   issuers: IssuerInfoMap;
   deeplink: string;
   qrCode: string;
+  data: any;
 }
 
 @Entity()
@@ -61,6 +62,9 @@ export class PresentationRequest extends BaseEntity {
   @Property({ columnType: 'text' })
   qrCode: string;
 
+  @Property({ columnType: 'jsonb' })
+  data: any;
+
   constructor (options: PresentationRequestOptions) {
     super(options);
 
@@ -73,5 +77,6 @@ export class PresentationRequest extends BaseEntity {
     this.issuers = options.issuers;
     this.deeplink = options.deeplink;
     this.qrCode = options.qrCode;
+    this.data = options.data;
   }
 }
