@@ -54,7 +54,8 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
       deeplink: response.data.deeplink,
       qrCode: response.data.qrCode,
       verifier,
-      holderApp
+      holderApp,
+      data: response.data
     }
   };
 }
