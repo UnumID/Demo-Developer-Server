@@ -8,6 +8,7 @@ import { resetDb } from '../resetDb';
 import { Application } from '../../src/declarations';
 import { Verifier } from '../../src/entities/Verifier';
 import { HolderApp } from '../../src/entities/HolderApp';
+import { User } from '../../src/entities/User';
 
 jest.mock('axios');
 describe('PresentationRequest service', () => {
@@ -25,6 +26,7 @@ describe('PresentationRequest service', () => {
       let app: Application;
       let verifier: Verifier;
       let holderApp: HolderApp;
+      let user: User;
       let presentationRequestResponse;
 
       const companyOptions = {
@@ -157,6 +159,17 @@ describe('PresentationRequest service', () => {
         const holderAppResponse = await supertest(app).post('/holderApp').send(holderAppOptions);
         holderApp = holderAppResponse.body;
 
+        const userOptions = {
+          name: 'test-user-123',
+          did: `did:unum:${uuidv4}`,
+          companyUuid: companyResponse.body.uuid
+        };
+
+        const userResponse = await supertest(app).post('/user').send(userOptions);
+        user = userResponse.body;
+
+        await supertest(app).post('/userAuthentication').send({ strategy: 'user', username: 'test-user-123' });
+
         const options = {
           verifierUuid: verifier.uuid,
           issuerUuid: issuerResponse.body.uuid,
@@ -181,7 +194,8 @@ describe('PresentationRequest service', () => {
             issuers: [mockReturnedIssuer.did]
           }],
           eccPrivateKey: mockReturnedVerifier.keys.signing.privateKey,
-          holderAppUuid: holderApp.uuid
+          holderAppUuid: holderApp.uuid,
+          metadata: { userUuid: user.uuid }
         };
         expect((axios.post as jest.Mock).mock.calls[3][1]).toEqual(expected);
       });
