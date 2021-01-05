@@ -4,16 +4,28 @@ import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { PresentationOrNoPresentation, Presentation } from '../types';
+import { PresentationOrNoPresentation, Presentation, NoPresentation } from '../types';
 import logger from '../logger';
+import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 
 export interface VerificationResponse {
   isVerified: boolean;
-  type: 'VerifiablePresentation' | 'NoPresentation'
+  type: 'VerifiablePresentation' | 'NoPresentation';
+  data: Presentation | NoPresentation;
 }
 
 export function isPresentation (presentation: PresentationOrNoPresentation): presentation is Presentation {
   return presentation.type[0] === 'VerifiablePresentation';
+}
+
+export function publisher (app: Application) {
+  return async function actualPublisher (response: any): Promise<Channel> {
+    console.log('response', response);
+    const presentationRequestService = app.service('presentationRequest');
+    const presentationRequest = await presentationRequestService.get(response.data.presentationRequestUuid);
+    const { userUuid } = presentationRequest.metadata;
+    return app.channel(userUuid);
+  };
 }
 
 export class PresentationService {
@@ -44,7 +56,7 @@ export class PresentationService {
       if (!response.data.isVerified) {
         throw new BadRequest('Verification failed.');
       }
-      return { isVerified: response.data.isVerified, type: 'NoPresentation' };
+      return { isVerified: response.data.isVerified, type: 'NoPresentation', data: presentation };
     }
 
     const response = await axios.post(url, { presentation, verifier: verifier.did }, { headers });
@@ -84,7 +96,7 @@ export class PresentationService {
       await sharedCredentialService.create(options);
     }
 
-    return { isVerified: true, type: 'VerifiablePresentation' };
+    return { isVerified: true, type: 'VerifiablePresentation', data: presentation };
   }
 
   setup (app: Application): void {
@@ -100,4 +112,6 @@ declare module '../declarations' {
 
 export default function (app: Application): void {
   app.use('/presentation', new PresentationService());
+  const service = app.service('presentation');
+  service.publish(publisher(app));
 }

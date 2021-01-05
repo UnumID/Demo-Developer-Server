@@ -268,7 +268,20 @@ describe('PresentationService', () => {
       it('returns a success response if the presentation is valid', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentation').send(presentation);
-        expect(response.body).toEqual({ isVerified: true, type: 'VerifiablePresentation' });
+        const expected = {
+          isVerified: true,
+          type: 'VerifiablePresentation',
+          data: {
+            ...presentation,
+            verifiableCredential: [
+              {
+                ...presentation.verifiableCredential[0],
+                issuanceDate: presentation.verifiableCredential[0].issuanceDate.toISOString()
+              }
+            ]
+          }
+        };
+        expect(response.body).toEqual(expected);
       });
 
       it('saves the shared credentials contained in the presentation', async () => {
@@ -310,7 +323,7 @@ describe('PresentationService', () => {
         it('returns a success response if the NoPresentation is valid', async () => {
           (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: true } });
           const response = await supertest(app).post('/presentation').send(noPresentation);
-          expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation' });
+          expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation', data: noPresentation });
         });
 
         it('returns a 400 status code if the NoPresentation is not verified', async () => {
