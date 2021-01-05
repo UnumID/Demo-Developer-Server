@@ -19,13 +19,18 @@ export default function (app: Application): void {
     // real-time connection, e.g. when logging in via REST
     if (connection) {
       // Obtain the logged in user from the connection
-      // const user = connection.user;
+      const { user } = connection;
 
       // The connection is no longer anonymous, remove it
       app.channel('anonymous').leave(connection);
 
       // Add it to the authenticated user channel
       app.channel('authenticated').join(connection);
+
+      // Add to user-specific channel
+      if (user) {
+        app.channel(user?.uuid).join(connection);
+      }
 
       // Channels can be named anything and joined on any condition
 
