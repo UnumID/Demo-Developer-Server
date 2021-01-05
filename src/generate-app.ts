@@ -15,6 +15,7 @@ import middleware from './middleware';
 import services from './services';
 import appHooks from './app.hooks';
 import channels from './channels';
+import authentication from './authentication';
 import { initMikroOrm } from './initMikroOrm';
 // Don't remove this comment. It's needed to format import lines nicely.
 
@@ -39,6 +40,7 @@ export default async function generateApp (): Promise<Application> {
 
   // Configure other middleware (see `middleware/index.js`)
   app.configure(middleware);
+  app.configure(authentication);
 
   await initMikroOrm(app);
   // Set up our services (see `services/index.js`)
