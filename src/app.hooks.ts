@@ -5,8 +5,18 @@ import { pick } from 'lodash';
 import logger from './logger';
 
 function logRequest (ctx: HookContext): void {
-  const { path, method, id } = ctx;
-  logger.info(`${path}#${method}${id ? ` id: ${id}` : ''}`);
+  const { path, method, id, data } = ctx;
+  logger.info(`${path}#${method}${id ? ` id: ${id}` : ''}${data ? ` data: ${JSON.stringify(data)}}` : ''}`);
+}
+
+function logResult (ctx: HookContext): HookContext {
+  const { path, method, result } = ctx;
+  const string = JSON.stringify(result);
+  const length = 1500; // prevent exceedingly long result log messages.
+  const resultString = string.length < length ? string : string.substring(0, length - 3) + '...';
+
+  logger.info(`${path}#${method} result: ${resultString}`);
+  return ctx;
 }
 
 function logError (ctx: HookContext): void {
@@ -38,7 +48,7 @@ export default {
   },
 
   after: {
-    all: [],
+    all: [logResult],
     find: [],
     get: [],
     create: [],
