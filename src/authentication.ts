@@ -1,21 +1,9 @@
 import { ServiceAddons, Params, ServiceOverloads } from '@feathersjs/feathers';
-import { AuthenticationService, AuthenticationBase, AuthenticationBaseStrategy } from '@feathersjs/authentication';
+import { AuthenticationService, AuthenticationBaseStrategy } from '@feathersjs/authentication';
 import { NotAuthenticated } from '@feathersjs/errors';
 import { User } from './entities/User';
-import { MikroOrmService } from 'feathers-mikro-orm'
+import { MikroOrmService } from 'feathers-mikro-orm';
 import { Application } from './declarations';
-
-// export declare class CustomStrategy implements AuthenticationBaseStrategy {
-//   get entityService (): MikroOrmService & ServiceAddons<MikroOrmService> & ServiceOverloads<MikroOrmService>;
-//   authentication?: AuthenticationBase;
-//   app?: Application;
-//   name?: string;
-//   setAuthentication(auth: AuthenticationBase): void;
-//   setApplication(app: Application): void;
-//   setName(name: string): void;
-//   get configuration(): any;
-//   // get entityService(): Service<any>;
-// }
 
 class UserStrategy extends AuthenticationBaseStrategy {
   get configuration (): any {
@@ -34,9 +22,6 @@ class UserStrategy extends AuthenticationBaseStrategy {
   async getEntity (result: any, params: Params): Promise<any> {
     const { entityService, configuration: { entityId, entity } } = this;
 
-    console.log('entityService', entityService)
-    console.log('entityId', entityId);
-    console.log('result', result)
     if (!entityId || result[entityId] === undefined) {
       throw new NotAuthenticated('Could not get local entity');
     }
