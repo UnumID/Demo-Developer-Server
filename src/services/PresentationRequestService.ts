@@ -24,8 +24,6 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
   const verifier = await verifierService.get(data.verifierUuid);
   const holderApp = await holderAppService.get(data.holderAppUuid);
 
-  const { user } = ctx.params;
-
   const options = {
     verifier: verifier.did,
     credentialRequests: data.credentialTypes.map((credentialType: string) => ({
@@ -36,7 +34,7 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
     eccPrivateKey: verifier.privateKey,
     holderAppUuid: data.holderAppUuid,
     metadata: {
-      userUuid: user?.uuid
+      userUuid: data.userUuid
     }
   };
 
