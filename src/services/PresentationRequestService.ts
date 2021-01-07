@@ -32,7 +32,10 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
       issuers: [issuer.did]
     })),
     eccPrivateKey: verifier.privateKey,
-    holderAppUuid: data.holderAppUuid
+    holderAppUuid: data.holderAppUuid,
+    metadata: {
+      userUuid: data.userUuid
+    }
   };
 
   const url = `${config.VERIFIER_URL}/api/sendRequest`;

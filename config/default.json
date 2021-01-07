@@ -5,5 +5,24 @@
   "paginate": {
     "default": 10,
     "max": 50
+  },
+  "userAuthentication": {
+    "entity": "user",
+    "service": "user",
+    "entityId": "name",
+    "secret": "4OGeO0gpH0EtXQ9CjP4jGlPD+J4=",
+    "authStrategies": [
+      "user",
+      "jwt"
+    ],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "issuer": "feathers",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    }
   }
 }
