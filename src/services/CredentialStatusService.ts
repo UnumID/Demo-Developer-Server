@@ -6,12 +6,17 @@ import { Application } from '../declarations';
 import { config } from '../config';
 import { SuccessResponse } from '../types';
 
+interface CredentialStatusPatchOptions {
+  issuerUuid: string;
+  status: 'valid' | 'revoked'
+}
+
 export class CredentialStatusService {
   private app!: Application;
 
-  async patch (credentialId: string): Promise<SuccessResponse> {
+  async patch (credentialId: string, data: CredentialStatusPatchOptions): Promise<SuccessResponse> {
     const issuerService = this.app.service('issuer');
-    const [issuer] = await issuerService.find();
+    const issuer = await issuerService.get(data.issuerUuid);
 
     try {
       const url = `${config.ISSUER_URL}/api/revokeCredentials`;
