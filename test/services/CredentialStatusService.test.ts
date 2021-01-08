@@ -7,6 +7,7 @@ import generateApp from '../../src/generate-app';
 import { Application } from '../../src/declarations';
 import { resetDb } from '../resetDb';
 import { IssuedCredential } from '../../src/entities/IssuedCredential';
+import { Issuer } from '../../src/entities/Issuer';
 
 jest.mock('axios');
 
@@ -73,6 +74,7 @@ describe('CredentialStatusService', () => {
       let server: Server;
       let app: Application;
       let credential: IssuedCredential;
+      let issuer: Issuer;
 
       beforeAll(async () => {
         app = await generateApp();
@@ -119,6 +121,7 @@ describe('CredentialStatusService', () => {
         };
 
         const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
+        issuer = issuerResponse.body;
 
         const userOptions = {
           name: 'Testy McTesterson',
@@ -146,8 +149,8 @@ describe('CredentialStatusService', () => {
 
       it('calls the issuer app to revoke the credential', async () => {
         const credentialId = credential.credential.id;
-
-        const response = await supertest(app).patch(`/credentialStatus/${credentialId}`).send();
+        const options = { issuerUuid: issuer.uuid, status: 'revoked' };
+        const response = await supertest(app).patch(`/credentialStatus/${credentialId}`).send(options);
         expect(axios.post).toBeCalled();
         expect(response.body).toEqual({ success: true });
       });
