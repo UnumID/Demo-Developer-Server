@@ -54,7 +54,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "faker": "^5.1.0",
-    "feathers-mikro-orm": "https://github.com/UnumID/feathers-mikro-orm.git",
+    "feathers-mikro-orm": "https://github.com/UnumID/feathers-mikro-orm.git#97eba44ee123176e8ebecb1268bd87f71f1cbf96",
     "helmet": "^3.21.2",
     "lodash": "^4.17.20",
     "mikro-orm": "^3.6.15",
