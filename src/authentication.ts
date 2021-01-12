@@ -31,6 +31,9 @@ class UserStrategy extends AuthenticationBaseStrategy {
     }
 
     const service = entityService as MikroOrmService & ServiceAddons<MikroOrmService> & ServiceOverloads<MikroOrmService>;
+
+    // clear the identity map so we don't accidentally get an outdated version of the entity
+    (this.app as Application).mikro?.em.clear();
     return service.get(null, { where: { name: result[entityId] } });
   }
 
