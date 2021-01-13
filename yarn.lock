@@ -2799,9 +2799,9 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "2.1.1"
 
-"feathers-mikro-orm@https://github.com/UnumID/feathers-mikro-orm.git":
+"feathers-mikro-orm@https://github.com/UnumID/feathers-mikro-orm.git#97eba44ee123176e8ebecb1268bd87f71f1cbf96":
   version "0.0.2"
-  resolved "https://github.com/UnumID/feathers-mikro-orm.git#aca0d98f449339d99f6483cb138eb2e1ab1223d4"
+  resolved "https://github.com/UnumID/feathers-mikro-orm.git#97eba44ee123176e8ebecb1268bd87f71f1cbf96"
   dependencies:
     "@feathersjs/adapter-commons" "^4.3.11"
     "@feathersjs/errors" "^4.3.11"
