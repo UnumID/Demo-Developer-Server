@@ -1,5 +1,5 @@
 import { ServiceAddons, Params, ServiceOverloads } from '@feathersjs/feathers';
-import { AuthenticationService, AuthenticationBaseStrategy } from '@feathersjs/authentication';
+import { AuthenticationService, AuthenticationBaseStrategy, JWTStrategy } from '@feathersjs/authentication';
 import { NotAuthenticated } from '@feathersjs/errors';
 import { User } from './entities/User';
 import { MikroOrmService } from 'feathers-mikro-orm';
@@ -57,6 +57,7 @@ export default function (app: Application): void {
   const userAuthentication = new AuthenticationService(app, 'userAuthentication');
 
   userAuthentication.register('user', new UserStrategy());
+  userAuthentication.register('jwt', new JWTStrategy());
 
   app.use('/userAuthentication', userAuthentication);
 }
