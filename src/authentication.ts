@@ -1,5 +1,5 @@
 import { ServiceAddons, Params, ServiceOverloads } from '@feathersjs/feathers';
-import { AuthenticationService, AuthenticationBaseStrategy } from '@feathersjs/authentication';
+import { AuthenticationService, AuthenticationBaseStrategy, JWTStrategy } from '@feathersjs/authentication';
 import { NotAuthenticated } from '@feathersjs/errors';
 import { User } from './entities/User';
 import { MikroOrmService } from 'feathers-mikro-orm';
@@ -20,10 +20,10 @@ class UserStrategy extends AuthenticationBaseStrategy {
   }
 
   async getEntity (result: any, params: Params): Promise<any> {
-    const { entityService, configuration: { entityId, entity } } = this;
+    const { entityService } = this;
 
-    if (!entityId || result[entityId] === undefined) {
-      throw new NotAuthenticated('Could not get local entity');
+    if (result.name === undefined) {
+      throw new NotAuthenticated('user name is required for authentication');
     }
 
     if (!params.provider) {
@@ -34,7 +34,7 @@ class UserStrategy extends AuthenticationBaseStrategy {
 
     // clear the identity map so we don't accidentally get an outdated version of the entity
     (this.app as Application).mikro?.em.clear();
-    return service.get(null, { where: { name: result[entityId] } });
+    return service.get(null, { where: { name: result.name } });
   }
 
   async authenticate (data: { strategy: 'session', user: User }, params: Params): Promise<any> {
@@ -57,6 +57,7 @@ export default function (app: Application): void {
   const userAuthentication = new AuthenticationService(app, 'userAuthentication');
 
   userAuthentication.register('user', new UserStrategy());
+  userAuthentication.register('jwt', new JWTStrategy());
 
   app.use('/userAuthentication', userAuthentication);
 }

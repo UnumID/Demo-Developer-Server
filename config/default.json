@@ -9,7 +9,7 @@
   "userAuthentication": {
     "entity": "user",
     "service": "user",
-    "entityId": "name",
+    "entityId": "uuid",
     "secret": "4OGeO0gpH0EtXQ9CjP4jGlPD+J4=",
     "authStrategies": [
       "user",
