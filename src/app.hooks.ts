@@ -21,9 +21,9 @@ function logResult (ctx: HookContext): HookContext {
 
 function logError (ctx: HookContext): void {
   const { path, method, error } = ctx;
-  const { name, code, message } = error;
+  const { name, code, message, stack } = error;
   const rawInfo = pick(ctx, ['params', 'id', 'data']);
-  const info = { ...rawInfo };
+  const info = { ...rawInfo, stack };
 
   if (info.params?.headers?.authorization) {
     info.params.headers.authorization = 'Bearer *****';
