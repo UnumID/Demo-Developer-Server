@@ -1,4 +1,5 @@
 import { MikroORM } from 'mikro-orm';
+import { v4 } from 'uuid';
 
 import config from '../../src/mikro-orm.config';
 import { IssuedCredential, IssuedCredentialOptions } from '../../src/entities/IssuedCredential';
@@ -35,6 +36,7 @@ describe('IssuedCredential entity', () => {
 
     const userOptions = {
       companyUuid: company.uuid,
+      did: `did:unum:${v4()}`,
       name: 'Testy McTesterson'
     };
 

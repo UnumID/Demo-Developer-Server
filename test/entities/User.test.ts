@@ -1,8 +1,8 @@
 import { MikroORM } from 'mikro-orm';
+import { v4 } from 'uuid';
 
 import config from '../../src/mikro-orm.config';
 import { User, UserOptions } from '../../src/entities/User';
-// import { UserOptions } from '../../src/entities/User';
 import { Company } from '../../src/entities/Company';
 import { resetDb } from '../resetDb';
 
@@ -24,7 +24,8 @@ describe('User entity', () => {
 
     options = {
       name: 'Testy McTesterson',
-      companyUuid: company.uuid
+      companyUuid: company.uuid,
+      did: `did:unum:${v4()}`
     };
 
     // clear the identity map
@@ -62,7 +63,7 @@ describe('User entity', () => {
 
       // find it by UUID
       const saved = await repository.findOneOrFail(initial.uuid);
-      expect(saved).toEqual({ ...initial, did: null });
+      expect(saved).toEqual(initial);
     });
   });
 });

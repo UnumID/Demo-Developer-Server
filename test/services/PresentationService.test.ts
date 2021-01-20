@@ -166,13 +166,13 @@ describe('PresentationService', () => {
       };
 
       const userOptions = {
-        name: 'Testy McTesterson',
         companyUuid: companyResponse.body.uuid,
         did: `did:unum:${uuidv4()}`
       };
 
       const verifierResponse = await supertest(app).post('/verifier').send(verifierOptions);
       await supertest(app).post('/user').send(userOptions);
+
       const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
 
       verifier = verifierResponse.body;

@@ -1,4 +1,5 @@
 import { MikroORM } from 'mikro-orm';
+import { v4 } from 'uuid';
 
 import config from '../../src/mikro-orm.config';
 import { SharedCredential, SharedCredentialOptions } from '../../src/entities/SharedCredential';
@@ -44,7 +45,8 @@ describe('SharedCredential entity', () => {
 
     const userOptions = {
       companyUuid: company.uuid,
-      name: 'Testy McTesterson'
+      name: 'Testy McTesterson',
+      did: `did:unum:${v4()}`
     };
 
     const user = new User(userOptions);

@@ -1,4 +1,4 @@
-import { ServiceAddons } from '@feathersjs/feathers';
+import { HookContext, ServiceAddons } from '@feathersjs/feathers';
 import createService, { MikroOrmService } from 'feathers-mikro-orm';
 
 import { Application } from '../declarations';
@@ -9,6 +9,25 @@ declare module '../declarations' {
     user: MikroOrmService & ServiceAddons<MikroOrmService>
   }
 }
+
+export async function generateUsername (ctx: HookContext): Promise<HookContext> {
+  const usernameService = ctx.app.service('username');
+  const { username } = await usernameService.create({});
+
+  return {
+    ...ctx,
+    data: {
+      ...ctx.data,
+      name: username
+    }
+  };
+}
+
+const hooks = {
+  before: {
+    create: generateUsername
+  }
+};
 
 export default function (app: Application): void {
   if (!app.mikro) {
@@ -28,4 +47,6 @@ export default function (app: Application): void {
   });
 
   app.use('/user', userService);
+  const service = app.service('user');
+  service.hooks(hooks);
 }
