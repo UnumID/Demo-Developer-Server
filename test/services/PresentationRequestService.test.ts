@@ -117,7 +117,6 @@ describe('PresentationRequest service', () => {
         holderApp = holderAppResponse.body;
 
         const userOptions = {
-          name: 'test-user-123',
           did: `did:unum:${uuidv4}`,
           companyUuid: companyResponse.body.uuid
         };

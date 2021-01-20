@@ -136,7 +136,6 @@ describe('SharedCredential service', () => {
       const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
 
       const userOptions = {
-        name: 'Testy McTesterson',
         companyUuid: companyResponse.body.uuid,
         did: `did:unum:${uuidv4()}`
       };

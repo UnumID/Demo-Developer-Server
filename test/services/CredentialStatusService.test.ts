@@ -124,7 +124,6 @@ describe('CredentialStatusService', () => {
         issuer = issuerResponse.body;
 
         const userOptions = {
-          name: 'Testy McTesterson',
           companyUuid: companyResponse.body.uuid,
           did: `did:unum:${v4()}`
         };
