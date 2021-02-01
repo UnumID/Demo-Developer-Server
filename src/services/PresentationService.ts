@@ -59,6 +59,7 @@ export class PresentationService {
       return { isVerified: response.data.isVerified, type: 'NoPresentation', data: presentation };
     }
 
+    // forward request to verifier
     const response = await axios.post(url, { presentation, verifier: verifier.did }, { headers });
 
     logger.info('response from verifier app', response.data);
@@ -70,7 +71,7 @@ export class PresentationService {
     }
 
     // return early if the presentation could not be verified
-    if (!response.data.verifiedStatus) {
+    if (!response.data.isVerified) {
       // return { isVerified: false, type: 'VerifiablePresentation' };
       throw new BadRequest('Verification failed');
     }
