@@ -4,14 +4,22 @@ import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { PresentationOrNoPresentation, Presentation, NoPresentation } from '../types';
+import { PresentationOrNoPresentation, Presentation, NoPresentation, IssuerInfoMap } from '../types';
 import logger from '../logger';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
+
+export interface PresentationReceiptInfo {
+  subjectDid: string;
+  verifierDid: string;
+  holderApp: string;
+  credentialTypes?: [string];
+  issuers?: IssuerInfoMap;
+}
 
 export interface VerificationResponse {
   isVerified: boolean;
   type: 'VerifiablePresentation' | 'NoPresentation';
-  data: Presentation | NoPresentation;
+  data: PresentationReceiptInfo;
 }
 
 export function isPresentation (presentation: PresentationOrNoPresentation): presentation is Presentation {
@@ -43,6 +51,12 @@ export class PresentationService {
     const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
     const headers = { Authorization: `Bearer ${verifier.authToken}` };
 
+    const presentationReceiptInfo: PresentationReceiptInfo = {
+      subjectDid: presentationRequest.metadata?.userUuid,
+      verifierDid: verifier.did,
+      holderApp: presentationRequest.holderApp.uuid
+    };
+
     // for now, assume all NoPresentations are valid
     // TODO: remove or replace with actual implementation once Verifier-Server-App is updated
     // to handle NoPresentations (https://trello.com/c/DbvobNVo/612-handle-nopresentations-part-2)
@@ -56,7 +70,7 @@ export class PresentationService {
       if (!response.data.isVerified) {
         throw new BadRequest('Verification failed.');
       }
-      return { isVerified: response.data.isVerified, type: 'NoPresentation', data: presentation };
+      return { isVerified: response.data.isVerified, type: 'NoPresentation', data: presentationReceiptInfo };
     }
 
     // forward request to verifier
@@ -97,7 +111,7 @@ export class PresentationService {
       await sharedCredentialService.create(options);
     }
 
-    return { isVerified: true, type: 'VerifiablePresentation', data: presentation };
+    return { isVerified: true, type: 'VerifiablePresentation', data: presentationReceiptInfo };
   }
 
   setup (app: Application): void {
