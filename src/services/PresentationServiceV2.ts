@@ -44,8 +44,8 @@ export function publisher (app: Application) {
 export class PresentationServiceV2 {
   private app!: Application;
 
-  async create (presentation: PresentationOrNoPresentation): Promise<VerificationResponse> {
-    const { presentationRequestUuid } = presentation;
+  async create (presentation: EncryptedPresentation): Promise<VerificationResponse> {
+    const { presentationRequestUuid, encryptedPresentation } = presentation;
 
     const presentationRequestService = this.app.service('presentationRequest');
     const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
@@ -53,8 +53,8 @@ export class PresentationServiceV2 {
     const verifierService = this.app.service('verifier');
 
     // verify presentation
-    // const url = `${config.VERIFIER_URL}/api/verifyEncryptedPresentation`;
-    const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
+    const url = `${config.VERIFIER_URL}/api/verifyEncryptedPresentation`;
+    // const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
     const headers = { Authorization: `Bearer ${verifier.authToken}` };
 
     const presentationReceiptInfo: PresentationReceiptInfo = {
@@ -80,7 +80,7 @@ export class PresentationServiceV2 {
     // }
 
     // forward request to verifier
-    const response = await axios.post(url, { presentation, verifier: verifier.did }, { headers });
+    const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });
 
     logger.info('response from verifier app', response.data);
 
