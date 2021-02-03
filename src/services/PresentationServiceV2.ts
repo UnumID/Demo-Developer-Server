@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { PresentationOrNoPresentation, Presentation, NoPresentation, IssuerInfoMap, EncryptedData } from '../types';
+import { IssuerInfoMap, EncryptedData } from '../types';
 import logger from '../logger';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 
@@ -26,10 +26,6 @@ export interface EncryptedPresentation {
   presentationRequestUuid: string;
   encryptedPresentation: EncryptedData;
 }
-
-// export function isPresentation (presentation: EncryptedPresentation): presentation is Presentation {
-//   return presentation.type[0] === 'VerifiablePresentation';
-// }
 
 export function publisher (app: Application) {
   return async function actualPublisher (response: any): Promise<Channel> {
@@ -57,22 +53,6 @@ export class PresentationServiceV2 {
     // const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
     const headers = { Authorization: `Bearer ${verifier.authToken}` };
 
-    // // for now, assume all NoPresentations are valid
-    // // TODO: remove or replace with actual implementation once Verifier-Server-App is updated
-    // // to handle NoPresentations (https://trello.com/c/DbvobNVo/612-handle-nopresentations-part-2)
-    // if (!isPresentation(presentation)) {
-    //   logger.info('Received NoPresentation', presentation);
-
-    //   const noPresentationUrl = `${config.VERIFIER_URL}/api/verifyNoPresentation`;
-
-    //   const response = await axios.post(noPresentationUrl, { noPresentation: presentation, verifier: verifier.did }, { headers });
-
-    //   if (!response.data.isVerified) {
-    //     throw new BadRequest('Verification failed.');
-    //   }
-    //   return { isVerified: response.data.isVerified, type: 'NoPresentation', data: presentationReceiptInfo };
-    // }
-
     // forward request to verifier
     const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });
 
@@ -86,30 +66,31 @@ export class PresentationServiceV2 {
 
     // return early if the presentation could not be verified
     if (!response.data.isVerified) {
-      // return { isVerified: false, type: 'VerifiablePresentation' };
       throw new BadRequest('Verification failed');
     }
 
-    // // save shared credentials
-    // const sharedCredentialService = this.app.service('sharedCredential');
-    // const issuerService = this.app.service('issuer');
-    // const userService = this.app.service('user');
+    if (response.data.type.contains('PresentationVerified')) {
+      // save shared credentials
+      const sharedCredentialService = this.app.service('sharedCredential');
+      const issuerService = this.app.service('issuer');
+      const userService = this.app.service('user');
 
-    // for (const credential of presentation.verifiableCredential) {
-    //   // get saved issuer and user by their dids
-    //   // note that the saved dids will not include key identifier fragments, which may be included in the credential
-    //   const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });
-    //   const user = await userService.get(null, { where: { did: credential.credentialSubject.id.split('#')[0] } });
+      for (const credential of response.data.credentials) {
+        // get saved issuer and user by their dids
+        // note that the saved dids will not include key identifier fragments, which may be included in the credential
+        const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });
+        const user = await userService.get(null, { where: { did: credential.credentialSubject.id.split('#')[0] } });
 
-    //   const options = {
-    //     verifierUuid: verifier.uuid,
-    //     issuerUuid: issuer.uuid,
-    //     userUuid: user.uuid,
-    //     credential
-    //   };
+        const options = {
+          verifierUuid: verifier.uuid,
+          issuerUuid: issuer.uuid,
+          userUuid: user.uuid,
+          credential
+        };
 
-    //   await sharedCredentialService.create(options);
-    // }
+        await sharedCredentialService.create(options);
+      }
+    }
 
     const presentationReceiptInfo: PresentationReceiptInfo = {
       subjectDid: response.data.subject,
