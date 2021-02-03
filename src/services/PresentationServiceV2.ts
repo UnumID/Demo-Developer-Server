@@ -7,6 +7,7 @@ import { config } from '../config';
 import { IssuerInfoMap, EncryptedData } from '../types';
 import logger from '../logger';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
+import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
 export interface PresentationReceiptInfo {
   subjectDid: string;
@@ -69,7 +70,7 @@ export class PresentationServiceV2 {
       throw new BadRequest('Verification failed');
     }
 
-    if (response.data.type.contains('PresentationVerified')) {
+    if (isArrayNotEmpty(response.data.type) && response.data.type.includes('PresentationVerified')) {
       // save shared credentials
       const sharedCredentialService = this.app.service('sharedCredential');
       const issuerService = this.app.service('issuer');
