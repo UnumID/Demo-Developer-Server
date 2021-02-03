@@ -19,7 +19,7 @@ export interface PresentationReceiptInfo {
 export interface VerificationResponse {
   isVerified: boolean;
   type: 'VerifiablePresentation' | 'NoPresentation';
-  data: PresentationReceiptInfo;
+  presentationReceiptInfo: PresentationReceiptInfo;
 }
 
 export interface EncryptedPresentation {
@@ -56,12 +56,6 @@ export class PresentationServiceV2 {
     const url = `${config.VERIFIER_URL}/api/verifyEncryptedPresentation`;
     // const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
     const headers = { Authorization: `Bearer ${verifier.authToken}` };
-
-    const presentationReceiptInfo: PresentationReceiptInfo = {
-      subjectDid: presentationRequest.metadata?.userUuid,
-      verifierDid: verifier.did,
-      holderApp: presentationRequest.holderApp.uuid
-    };
 
     // // for now, assume all NoPresentations are valid
     // // TODO: remove or replace with actual implementation once Verifier-Server-App is updated
@@ -117,7 +111,15 @@ export class PresentationServiceV2 {
     //   await sharedCredentialService.create(options);
     // }
 
-    return { isVerified: true, type: 'VerifiablePresentation', data: presentationReceiptInfo };
+    const presentationReceiptInfo: PresentationReceiptInfo = {
+      subjectDid: response.data.subject,
+      credentialTypes: response.data.credentialTypes,
+      verifierDid: verifier.did,
+      holderApp: presentationRequest.holderApp.uuid,
+      issuers: presentationRequest.issuers
+    };
+
+    return { isVerified: true, type: 'VerifiablePresentation', presentationReceiptInfo };
   }
 
   setup (app: Application): void {
