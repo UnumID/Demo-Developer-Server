@@ -38,6 +38,9 @@ export function publisher (app: Application) {
   };
 }
 
+/**
+ * This service handles encrypted presentations from the saas where v1 handle plain text presentation from the holder sdk.
+ */
 export class PresentationServiceV2 {
   private app!: Application;
 
@@ -98,10 +101,10 @@ export class PresentationServiceV2 {
       credentialTypes: response.data.credentialTypes,
       verifierDid: verifier.did,
       holderApp: presentationRequest.holderApp.uuid,
-      issuers: presentationRequest.issuers
+      issuers: response.data.type && response.data.type.includes('PresentationVerified') ? presentationRequest.issuers : undefined
     };
 
-    return { isVerified: true, type: 'VerifiablePresentation', presentationReceiptInfo };
+    return { isVerified: true, type: response.data.type, presentationReceiptInfo };
   }
 
   setup (app: Application): void {
