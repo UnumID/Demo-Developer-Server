@@ -989,14 +989,6 @@
   dependencies:
     eslint-visitor-keys "^1.1.0"
 
-"Library-Crypto-TypeScript@https://github.com/UnumID/Library-Crypto-TypeScript.git":
-  version "0.0.1"
-  resolved "https://github.com/UnumID/Library-Crypto-TypeScript.git#9a167c2200f47636c8389756f89f28549991ac78"
-  dependencies:
-    "@types/bs58" "^4.0.1"
-    bs58 "^4.0.1"
-    fast-json-stable-stringify "^2.1.0"
-
 abab@^2.0.3:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.4.tgz#6dfa57b417ca06d21b2478f0e638302f99c2405c"
@@ -4486,6 +4478,14 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+"library-crypto-typescript@https://github.com/UnumID/Library-Crypto-TypeScript.git":
+  version "0.0.1"
+  resolved "https://github.com/UnumID/Library-Crypto-TypeScript.git#9a167c2200f47636c8389756f89f28549991ac78"
+  dependencies:
+    "@types/bs58" "^4.0.1"
+    bs58 "^4.0.1"
+    fast-json-stable-stringify "^2.1.0"
 
 liftoff@3.1.0:
   version "3.1.0"

@@ -14,7 +14,6 @@ import { HolderApp } from '../../src/entities/HolderApp';
 import { encrypt } from 'library-crypto-typescript';
 import { EncryptedPresentation } from '../../src/services/PresentationServiceV2';
 import { Issuer } from '../../src/entities/Issuer';
-import { stubObject, subtract } from 'lodash';
 
 jest.mock('axios');
 const mockAxiosPost = axios.post as jest.Mock;
