@@ -34,6 +34,7 @@ export async function registerVerifier (ctx: HookContext): Promise<HookContext> 
     data: {
       name: response.data.name,
       privateKey: response.data.keys.signing.privateKey,
+      encryptionPrivateKey: response.data.keys.encryption.privateKey,
       did: response.data.did,
       authToken: response.headers['x-auth-token'],
       companyUuid: data.companyUuid

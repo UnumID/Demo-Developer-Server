@@ -2,32 +2,39 @@ import { Server } from 'http';
 import supertest from 'supertest';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import dedent from 'dedent';
 
 import generateApp from '../../src/generate-app';
-import { Presentation, NoPresentation } from '../../src/types';
+import { Presentation, NoPresentation, EncryptedData } from '../../src/types';
 import { Application } from '../../src/declarations';
 import { Verifier } from '../../src/entities/Verifier';
 import { config } from '../../src/config';
 import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
+import { encrypt } from 'library-crypto-typescript';
+import { EncryptedPresentation } from '../../src/services/PresentationServiceV2';
+import { Issuer } from '../../src/entities/Issuer';
 
 jest.mock('axios');
 const mockAxiosPost = axios.post as jest.Mock;
 
-describe('PresentationService', () => {
+describe('PresentationServiceV2', () => {
   describe('initializing the service', () => {
     it('registers with the app', async () => {
       const app = await generateApp();
-      const service = app.service('presentation');
+      const service = app.service('presentationV2');
       expect(service).toBeDefined();
     });
   });
 
-  describe('/presentation endpoint', () => {
+  describe('/presentationV2 endpoint', () => {
     let presentation: Presentation;
+    let encryptedPresentationData: EncryptedData;
+    let encryptedPresentation: EncryptedPresentation;
     let app: Application;
     let server: Server;
     let verifier: Verifier;
+    let issuer: Issuer;
     let holderApp: HolderApp;
     let mockReturnedHeaders;
     let requestUuid;
@@ -67,7 +74,7 @@ describe('PresentationService', () => {
         did: `did:unum:${uuidv4()}`,
         customerUuid: companyOptions.unumIdCustomerUuid,
         name: 'ACME Inc. TEST Verifier',
-        url: `${config.BASE_URL}/presentation`,
+        url: `${config.BASE_URL}/presentationV2`,
         keys: {
           signing: {
             privateKey: '-----BEGIN EC PRIVATE KEY-----MHcCAQEEIIFtwDWUzCbfeikEgD4m6G58hQo51d2Qz6bL11AHDMbDoAoGCCqGSM49AwEHoUQDQgAEwte3H5BXDcJy+4z4avMsNuqXFGYfL3ewcU0pe+UrYbhh6B7oCdvSPocO55BZO5pAOF/qxa/NhwixxqFf9eWVFg==-----END EC PRIVATE KEY-----'
@@ -110,7 +117,7 @@ describe('PresentationService', () => {
         verifier: {
           name: 'ACME, Inc. Verifier',
           did: mockReturnedVerifier.did,
-          url: `${config.BASE_URL}/presentation?verifier=${mockReturnedVerifier.uuid}`
+          url: `${config.BASE_URL}/presentationV2?verifier=${mockReturnedVerifier.uuid}`
         },
         credentialRequests: [
           {
@@ -179,6 +186,7 @@ describe('PresentationService', () => {
       const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
 
       verifier = verifierResponse.body;
+      issuer = issuerResponse.body;
 
       const holderAppOptions = {
         name: 'ACME Inc. TEST Holder App',
@@ -244,6 +252,21 @@ describe('PresentationService', () => {
           proofPurpose: 'AssertionMethod'
         }
       };
+
+      const dummyRsaPublicKey1 = dedent`-----BEGIN RSA PUBLIC KEY-----
+        MIIBCgKCAQEA4O1qt78lCjVsZmsNn8dgVNyouuLMswJFDundq8hngsNQRyulb60F
+        cAVd6yDFX7VKvuW/qg8+LOn/96yzgeVYWvgX9kiXmZNhW+WelqksJdq3IjIPqeY7
+        SaslBV7z1OJCwefn7PTlozcxWYeVsGuwwxNsI3ZEup9QdSbto1mKAKN1PuntsXKK
+        eV91L/KFmD5KQ30p14I5Ku/iWey+0NdYV9DNX6O34LKCY32LBeSgjltYuIs60CeQ
+        UrDHPXg3E6Vi4J24JPj1awip0rrRwysEfJ9fkpn5MXqmZQ0j6tUHIkSccXtzJssP
+        mm8BsTr/8GQSVyDC8z9yLUw75odNLqF54wIDAQAB
+        -----END RSA PUBLIC KEY-----`;
+
+      encryptedPresentationData = encrypt(mockReturnedVerifier.did, dummyRsaPublicKey1, presentation, 'pem');
+      encryptedPresentation = {
+        presentationRequestUuid: presentation.presentationRequestUuid,
+        encryptedPresentation: encryptedPresentationData
+      };
     });
 
     afterEach(async () => {
@@ -252,45 +275,61 @@ describe('PresentationService', () => {
 
     describe('post', () => {
       it('sends the presentation to the verifier app for verification', async () => {
-        await supertest(app).post('/presentation').send(presentation);
+        await supertest(app).post('/presentationV2').send(encryptedPresentation);
         const expectedData = {
-          presentation: {
-            ...presentation,
-            verifiableCredential: [{
-              ...presentation.verifiableCredential[0],
-              issuanceDate: '2020-09-03T18:42:30.645Z'
-            }]
-          },
-          verifier: verifier.did
+          encryptedPresentation: encryptedPresentationData,
+          verifier: verifier.did,
+          encryptionPrivateKey: verifier.encryptionPrivateKey
         };
 
         // Testing that axios is being called correctly
+
         const postBody = mockAxiosPost.mock.calls[4][1];
+
         expect(postBody).toEqual(expectedData);
       });
 
       it('returns a success response if the presentation is valid', async () => {
-        (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentation').send(presentation);
+        const verifyReturnValue = {
+          type: ['PresentationVerified'],
+          subject: presentation.verifiableCredential[0].proof.verificationMethod,
+          isVerified: true,
+          credentialTypes: ['VerifiableCredential', 'TestCredential'],
+          credentials: presentation.verifiableCredential
+        };
+
+        (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
+        const response = await supertest(app).post('/presentationV2').send(encryptedPresentation);
         const expected = {
           isVerified: true,
-          type: 'VerifiablePresentation',
-          data: {
-            ...presentation,
-            verifiableCredential: [
-              {
-                ...presentation.verifiableCredential[0],
-                issuanceDate: presentation.verifiableCredential[0].issuanceDate.toISOString()
+          type: ['PresentationVerified'],
+          presentationReceiptInfo: {
+            subjectDid: presentation.verifiableCredential[0].proof.verificationMethod,
+            verifierDid: verifier.did,
+            holderApp: holderApp.uuid,
+            credentialTypes: ['VerifiableCredential', 'TestCredential'],
+            issuers: {
+              [issuer.did]: {
+                did: issuer.did,
+                name: issuer.name
               }
-            ]
+            }
           }
         };
         expect(response.body).toEqual(expected);
       });
 
       it('saves the shared credentials contained in the presentation', async () => {
-        (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
-        await supertest(app).post('/presentation').send(presentation);
+        const verifyReturnValue = {
+          type: ['PresentationVerified'],
+          subject: presentation.verifiableCredential[0].proof.verificationMethod,
+          isVerified: true,
+          credentialTypes: ['VerifiableCredential', 'TestCredential'],
+          credentials: presentation.verifiableCredential
+        };
+
+        (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
+        await supertest(app).post('/presentationV2').send(encryptedPresentation);
 
         const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send();
 
@@ -308,6 +347,8 @@ describe('PresentationService', () => {
 
       describe('handling a NoPresentation', () => {
         let noPresentation: NoPresentation;
+        let encryptedNoPresentationData;
+        let encryptedNoPresentation;
 
         beforeEach(() => {
           noPresentation = {
@@ -322,24 +363,77 @@ describe('PresentationService', () => {
             },
             holder: 'did:unum:3ff2f020-50b0-4f4c-a267-a9f104aedcd8'
           };
+          const dummyRsaPublicKey1 = dedent`-----BEGIN RSA PUBLIC KEY-----
+          MIIBCgKCAQEA4O1qt78lCjVsZmsNn8dgVNyouuLMswJFDundq8hngsNQRyulb60F
+          cAVd6yDFX7VKvuW/qg8+LOn/96yzgeVYWvgX9kiXmZNhW+WelqksJdq3IjIPqeY7
+          SaslBV7z1OJCwefn7PTlozcxWYeVsGuwwxNsI3ZEup9QdSbto1mKAKN1PuntsXKK
+          eV91L/KFmD5KQ30p14I5Ku/iWey+0NdYV9DNX6O34LKCY32LBeSgjltYuIs60CeQ
+          UrDHPXg3E6Vi4J24JPj1awip0rrRwysEfJ9fkpn5MXqmZQ0j6tUHIkSccXtzJssP
+          mm8BsTr/8GQSVyDC8z9yLUw75odNLqF54wIDAQAB
+          -----END RSA PUBLIC KEY-----`;
+          const mockReturnedVerifier = {
+            uuid: uuidv4(),
+            did: `did:unum:${uuidv4()}`,
+            name: 'ACME Inc. TEST Verifier',
+            url: `${config.BASE_URL}/presentationV2`,
+            keys: {
+              signing: {
+                privateKey: '-----BEGIN EC PRIVATE KEY-----MHcCAQEEIIFtwDWUzCbfeikEgD4m6G58hQo51d2Qz6bL11AHDMbDoAoGCCqGSM49AwEHoUQDQgAEwte3H5BXDcJy+4z4avMsNuqXFGYfL3ewcU0pe+UrYbhh6B7oCdvSPocO55BZO5pAOF/qxa/NhwixxqFf9eWVFg==-----END EC PRIVATE KEY-----'
+              },
+              encryption: {
+                privateKey: '-----BEGIN PRIVATE KEY-----MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgm8wJE088DMBsevNbVumkWaD/pQeJMJ/ugoqp3fgSZaahRANCAAR0pYxqjkS76+HwdOFneQggtFSzkx32KwMVlRnUHh51s6adCEnQ1NeLI1pWl4+hVL9tBzshs72Oq1cW0q3hJ38m-----END PRIVATE KEY-----'
+              }
+            }
+          };
+
+          encryptedNoPresentationData = encrypt(mockReturnedVerifier.did, dummyRsaPublicKey1, noPresentation, 'pem');
+          encryptedNoPresentation = {
+            presentationRequestUuid: presentation.presentationRequestUuid,
+            encryptedPresentation: encryptedPresentationData
+          };
         });
 
         it('returns a success response if the NoPresentation is valid', async () => {
-          (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: true } });
-          const response = await supertest(app).post('/presentation').send(noPresentation);
-          expect(response.body).toEqual({ isVerified: true, type: 'NoPresentation', data: noPresentation });
+          const verifyReturnValue = {
+            type: ['NoPresentation'],
+            subject: noPresentation.proof.verificationMethod,
+            isVerified: true
+            // credentialTypes: ['No', 'TestCredential'],
+            // credentials: presentation.verifiableCredential
+          };
+
+          const expected = {
+            isVerified: true,
+            type: ['NoPresentation'],
+            presentationReceiptInfo: {
+              subjectDid: noPresentation.proof.verificationMethod,
+              verifierDid: verifier.did,
+              holderApp: holderApp.uuid
+              //   credentialTypes: ['VerifiableCredential', 'TestCredential'],
+            //   issuers: {
+            //     [issuer.did]: {
+            //       did: issuer.did,
+            //       name: issuer.name
+            //     }
+            //   }
+            }
+          };
+
+          (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
+          const response = await supertest(app).post('/presentationV2').send(encryptedNoPresentation);
+          expect(response.body).toEqual(expected);
         });
 
         it('returns a 400 status code if the NoPresentation is not verified', async () => {
-          (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false } });
-          const response = await supertest(app).post('/presentation').send(noPresentation);
+          (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
+          const response = await supertest(app).post('/presentationV2').send(encryptedNoPresentation);
           expect(response.status).toEqual(400);
         });
       });
 
       it('returns 400 status code if the Presentation is not verified', async () => {
-        (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: false }, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentation').send(presentation);
+        (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
+        const response = await supertest(app).post('/presentationV2').send(encryptedPresentation);
         expect(response.status).toEqual(400);
       });
     });

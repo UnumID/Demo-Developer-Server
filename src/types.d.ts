@@ -59,3 +59,13 @@ export interface IssuerInfoMap {
 export interface SuccessResponse {
   success: boolean;
 }
+
+export interface EncryptedData {
+  data: string;
+  key: {
+    iv: string;
+    key: string;
+    algorithm: string;
+    did: string;
+  };
+}
