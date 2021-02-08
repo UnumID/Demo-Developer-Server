@@ -8,6 +8,7 @@ export interface VerifierOptions extends BaseEntityOptions {
   name: string;
   did: string;
   privateKey: string;
+  encryptionPrivateKey: string;
   authToken: string;
   companyUuid: string;
 }
@@ -19,6 +20,9 @@ export class Verifier extends BaseEntity {
 
   @Property({ columnType: 'text' })
   privateKey: string;
+
+  @Property({ columnType: 'text' })
+  encryptionPrivateKey: string;
 
   @Property({ columnType: 'text' })
   authToken: string;
@@ -38,12 +42,14 @@ export class Verifier extends BaseEntity {
       name,
       did,
       privateKey,
+      encryptionPrivateKey,
       authToken,
       companyUuid
     } = options;
 
     this.did = did;
     this.privateKey = privateKey;
+    this.encryptionPrivateKey = encryptionPrivateKey;
     this.authToken = authToken;
     this.name = name;
     this.companyUuid = companyUuid;
