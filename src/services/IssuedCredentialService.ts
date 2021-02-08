@@ -33,7 +33,7 @@ export async function issueCredential (ctx: HookContext): Promise<HookContext> {
     eccPrivateKey: issuer.privateKey
   };
 
-  const url = `${config.ISSUER_URL}/api/issueCredentials`;
+  const url = `${config.ISSUER_URL}/api/issueCredential`;
 
   const headers = { Authorization: `Bearer ${issuer.authToken}` };
 
