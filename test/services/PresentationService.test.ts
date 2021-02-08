@@ -270,7 +270,7 @@ describe('PresentationService', () => {
       });
 
       it('returns a success response if the presentation is valid', async () => {
-        (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
+        (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: true }, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentation').send(presentation);
         const expected = {
           isVerified: true,
@@ -289,7 +289,7 @@ describe('PresentationService', () => {
       });
 
       it('saves the shared credentials contained in the presentation', async () => {
-        (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: true }, headers: mockReturnedHeaders });
+        (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: true }, headers: mockReturnedHeaders });
         await supertest(app).post('/presentation').send(presentation);
 
         const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send();
@@ -338,7 +338,7 @@ describe('PresentationService', () => {
       });
 
       it('returns 400 status code if the Presentation is not verified', async () => {
-        (axios.post as jest.Mock).mockReturnValueOnce({ data: { verifiedStatus: false }, headers: mockReturnedHeaders });
+        (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentation').send(presentation);
         expect(response.status).toEqual(400);
       });

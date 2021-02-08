@@ -70,7 +70,7 @@ export class PresentationService {
     }
 
     // return early if the presentation could not be verified
-    if (!response.data.verifiedStatus) {
+    if (!response.data.isVerified) {
       // return { isVerified: false, type: 'VerifiablePresentation' };
       throw new BadRequest('Verification failed');
     }
