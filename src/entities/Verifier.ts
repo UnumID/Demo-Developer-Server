@@ -11,6 +11,7 @@ export interface VerifierOptions extends BaseEntityOptions {
   encryptionPrivateKey: string;
   authToken: string;
   companyUuid: string;
+  url: string;
 }
 
 @Entity()
@@ -40,6 +41,7 @@ export class Verifier extends BaseEntity {
     super(options);
     const {
       name,
+      url,
       did,
       privateKey,
       encryptionPrivateKey,
@@ -53,6 +55,6 @@ export class Verifier extends BaseEntity {
     this.authToken = authToken;
     this.name = name;
     this.companyUuid = companyUuid;
-    this.url = `${config.BASE_URL}/presentation`;
+    this.url = url;
   }
 }
