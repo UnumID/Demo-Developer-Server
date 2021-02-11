@@ -38,8 +38,7 @@ export async function registerVerifier (ctx: HookContext): Promise<HookContext> 
       encryptionPrivateKey: response.data.keys.encryption.privateKey,
       did: response.data.did,
       authToken: response.headers['x-auth-token'],
-      companyUuid: data.companyUuid,
-      url: definedVerifierUrl
+      companyUuid: data.companyUuid
     }
   };
 }
