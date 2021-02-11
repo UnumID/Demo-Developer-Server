@@ -15,19 +15,20 @@ declare module '../declarations' {
 export async function registerVerifier (ctx: HookContext): Promise<HookContext> {
   const { data } = ctx;
 
+  const definedVerifierUrl = data.url;
   const companyService = ctx.app.service('company');
 
   const company = await companyService.get(data.companyUuid);
 
-  const url = `${config.VERIFIER_URL}/api/register`;
+  const verifierUrl = `${config.VERIFIER_URL}/api/register`;
   const verifierOptions = {
     ...data,
     apiKey: data.verifierApiKey,
     customerUuid: company.unumIdCustomerUuid,
-    url
+    url: definedVerifierUrl
   };
 
-  const response = await axios.post(url, verifierOptions);
+  const response = await axios.post(verifierUrl, verifierOptions);
 
   return {
     ...ctx,

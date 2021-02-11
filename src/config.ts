@@ -14,6 +14,7 @@ interface Config {
   BASE_URL: string;
   PAPERTRAIL_PORT: number;
   NODE_ENV: string;
+  LOG_LEVEL: string;
 }
 
 const {
@@ -32,6 +33,7 @@ const {
   VERIFIER_URL,
   BASE_URL,
   PAPERTRAIL_PORT,
+  LOG_LEVEL,
   SAAS_URL
 } = process.env;
 
@@ -54,5 +56,6 @@ export const config: Config = {
   SAAS_URL: ensureString(SAAS_URL),
   BASE_URL: ensureString(BASE_URL, 'http://localhost:3031'),
   PAPERTRAIL_PORT: parseInt(ensureString(PAPERTRAIL_PORT), 10),
+  LOG_LEVEL: ensureString(LOG_LEVEL),
   NODE_ENV: ensureString(NODE_ENV, 'development')
 };

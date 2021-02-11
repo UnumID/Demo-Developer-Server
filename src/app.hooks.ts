@@ -33,7 +33,7 @@ function logError (ctx: HookContext): void {
     info.params.authToken = '*****';
   }
 
-  logger.warn(`Error in ${path}#${method}: name=${name} code=${code} message=${message}`, info);
+  logger.warning(`Error in ${path}#${method}: name=${name} code=${code} message=${message}`, info);
 }
 
 export default {
