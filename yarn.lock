@@ -1011,14 +1011,33 @@
   dependencies:
     eslint-visitor-keys "^1.1.0"
 
-"@unumid/server-sdk@git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.1.2":
-  version "0.1.0"
-  resolved "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#e2aa3cf964ab3d0698b4b44fc7e674ccc5cc48dd"
+"@unumid/library-crypto@https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.1.1":
+  version "0.0.1"
+  resolved "https://github.com/UnumID/Library-Crypto-TypeScript.git#aee817869106d933ba2598d1f48e94c2c42233a6"
   dependencies:
+    "@types/bs58" "^4.0.1"
+    bs58 "^4.0.1"
+    fast-json-stable-stringify "^2.1.0"
+
+"@unumid/library-issuer-verifier-utility@https://github.com/UnumID/library-issuer-verifier-utility.git#v0.5.0":
+  version "1.0.0"
+  resolved "https://github.com/UnumID/library-issuer-verifier-utility.git#64f31acdfcb233e9bf666948a3f63d3d71822d54"
+  dependencies:
+    "@unumid/library-crypto" "https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.1.1"
+    dotenv "^8.2.0"
+    express "^4.17.1"
+    node-fetch "^2.6.1"
+    uuid "^8.2.0"
+    winston "^3.3.3"
+
+"@unumid/server-sdk@git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.2.1":
+  version "0.1.0"
+  resolved "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#898b0838b4d6b2e88e7e5324b277a6ce8ae16307"
+  dependencies:
+    "@unumid/library-issuer-verifier-utility" "https://github.com/UnumID/library-issuer-verifier-utility.git#v0.5.0"
     dotenv "^8.2.0"
     express "^4.17.1"
     fast-json-stable-stringify "^2.1.0"
-    library-issuer-verifier-utility "https://github.com/UnumID/library-issuer-verifier-utility.git#v0.4.3"
     lodash "^4.17.20"
     ts-node "^9.0.0"
     winston "^3.3.3"
@@ -4525,25 +4544,6 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
-
-"library-crypto-typescript@https://github.com/UnumID/Library-Crypto-TypeScript.git", "library-crypto-typescript@https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.0.0":
-  version "0.0.1"
-  resolved "https://github.com/UnumID/Library-Crypto-TypeScript.git#9a167c2200f47636c8389756f89f28549991ac78"
-  dependencies:
-    "@types/bs58" "^4.0.1"
-    bs58 "^4.0.1"
-    fast-json-stable-stringify "^2.1.0"
-
-"library-issuer-verifier-utility@https://github.com/UnumID/library-issuer-verifier-utility.git#v0.4.3":
-  version "1.0.0"
-  resolved "https://github.com/UnumID/library-issuer-verifier-utility.git#c6f7adc9194f1bacda689ba9d387efc6839fc1c2"
-  dependencies:
-    dotenv "^8.2.0"
-    express "^4.17.1"
-    library-crypto-typescript "https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.0.0"
-    node-fetch "^2.6.1"
-    uuid "^8.2.0"
-    winston "^3.3.3"
 
 liftoff@3.1.0:
   version "3.1.0"
