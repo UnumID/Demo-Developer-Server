@@ -5,6 +5,8 @@ import createService, { MikroOrmService } from 'feathers-mikro-orm';
 import { Application } from '../declarations';
 import { config } from '../config';
 import { PresentationRequest } from '../entities/PresentationRequest';
+import logger from '../logger';
+import { handleError } from '../utils/errorHandler';
 
 interface RequestOptions {
   companyUuid: string;
@@ -39,28 +41,38 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
   };
 
   const url = `${config.VERIFIER_URL}/api/sendRequest`;
-  const headers = { Authorization: `Bearer ${verifier.authToken}` };
 
-  const response = await axios.post(url, options, { headers });
+  // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
+  const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
+  const headers = { Authorization: authToken };
 
-  const authTokenResponse = response.headers['x-auth-token'];
+  try {
+    const response = await axios.post(url, options, { headers });
+    // const body: PresentationRequestResponse = response.data;
 
-  if (authTokenResponse !== verifier.authToken) {
-    await verifierService.patch(data.verifierUuid, { authToken: authTokenResponse });
-  }
-  return {
-    ...ctx,
-    data: {
-      ...response.data.presentationRequest,
-      verifierInfo: response.data.verifier,
-      issuers: response.data.issuers,
-      deeplink: response.data.deeplink,
-      qrCode: response.data.qrCode,
-      verifier,
-      holderApp,
-      data: response.data
+    const authTokenResponse = response.headers['x-auth-token'];
+
+    if (authTokenResponse !== verifier.authToken) {
+      await verifierService.patch(data.verifierUuid, { authToken: authTokenResponse });
     }
-  };
+    return {
+      ...ctx,
+      data: {
+        ...response.data.presentationRequest,
+        verifierInfo: response.data.verifier,
+        issuers: response.data.issuers,
+        deeplink: response.data.deeplink,
+        qrCode: response.data.qrCode,
+        verifier,
+        holderApp,
+        data: response.data
+      }
+    };
+  } catch (e) {
+    logger.error('Error sending presentation request', e);
+    handleError(e);
+    throw e;
+  }
 }
 
 declare module '../declarations' {

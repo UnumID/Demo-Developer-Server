@@ -20,7 +20,11 @@ export class SmsService {
 
     try {
       const url = `${config.VERIFIER_URL}/api/sendSms`;
-      const headers = { Authorization: `Bearer ${verifier.authToken}` };
+
+      // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
+      const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
+      const headers = { Authorization: authToken };
+
       const response = await axios.post(url, data, { headers });
       return response.data;
     } catch (e) {

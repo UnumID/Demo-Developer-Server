@@ -54,8 +54,10 @@ export class PresentationServiceV2 {
 
     // verify presentation
     const url = `${config.VERIFIER_URL}/api/verifyEncryptedPresentation`;
-    // const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
-    const headers = { Authorization: `Bearer ${verifier.authToken}` };
+
+    // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
+    const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
+    const headers = { Authorization: `${authToken}` };
 
     // forward request to verifier
     const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });

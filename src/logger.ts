@@ -10,32 +10,56 @@ const options = {
   host: 'logs.papertrailapp.com',
   port: config.PAPERTRAIL_PORT,
   app_name: 'test-customer-app',
-  localhost
+  localhost,
+  format: format.combine(
+    format.colorize(),
+    format.printf(info => {
+      return `${info.level}: ${info.message}`;
+    })
+  )
 };
+
+// Only adding the timestamp if running locally. Otherwise the timestamp is little redundant when can be added in supplementary fashion outside of the message itself.
+const consoleFormat = config.NODE_ENV === 'local'
+  ? format.combine(
+    format.colorize(),
+    format.timestamp({
+      format: 'HH:mm.ss.SSS'
+    }),
+    format.printf(info => {
+      return `${info.timestamp} ${info.level}: ${info.message}`;
+    })
+  )
+  : format.combine(
+    format.printf(info => {
+      return `${info.level}: ${info.message}`;
+    })
+  );
+
+// prevent reporting anywhere but to stdout if running locally
+// Note using NPM default log levels: https://github.com/winstonjs/winston#logging-levels
+const logTransports = config.NODE_ENV === 'local'
+  ? [
+    new transports.Console({
+      level: config.LOG_LEVEL || 'debug',
+      format: consoleFormat
+    })
+  ]
+  : [
+    new transports.Console({
+      level: config.LOG_LEVEL || 'debug',
+      format: consoleFormat
+    }),
+    new Syslog(options)
+  ];
 
 // Configure the Winston logger. For the complete documentation see https://github.com/winstonjs/winston
 const logger = createLogger({
-  // To see more detailed errors, change this to 'debug'
-  levels: winston.syslog.levels,
   format: format.combine(
     format.splat(),
-    format.timestamp(),
-    format.errors({ stack: true }),
-    format.simple()
+    format.errors({ stack: true })
   ),
-  transports: [
-    new transports.Console({
-      level: config.LOG_LEVEL || 'info',
-      format: format.combine(
-        format.splat(),
-        format.timestamp(),
-        format.colorize(),
-        format.errors({ stack: true }),
-        format.simple()
-      )
-    }), // Turns out Winston defaults to info but just setting default explicitly anyway.
-    new Syslog(options)
-  ],
+  transports: logTransports,
   silent: config.NODE_ENV === 'test'
 });
 

@@ -11,7 +11,7 @@ import { Verifier } from '../../src/entities/Verifier';
 import { config } from '../../src/config';
 import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
-import { encrypt } from 'library-crypto-typescript';
+import { encrypt } from '@unumid/library-crypto';
 import { EncryptedPresentation } from '../../src/services/PresentationServiceV2';
 import { Issuer } from '../../src/entities/Issuer';
 
