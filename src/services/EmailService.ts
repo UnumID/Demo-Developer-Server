@@ -29,7 +29,7 @@ export class EmailService {
       const response = await axios.post(url, data, { headers });
       return response.data;
     } catch (e) {
-      throw new GeneralError('Error sending email.');
+      throw new GeneralError(`Error sending email. ${e}`);
     }
   }
 

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Application } from '../declarations';
 import { IssuedCredential } from '../entities/IssuedCredential';
 import { config } from '../config';
+import { GeneralError } from '@feathersjs/errors';
 
 declare module '../declarations' {
   interface ServiceTypes {
@@ -39,22 +40,26 @@ export async function issueCredential (ctx: HookContext): Promise<HookContext> {
   const authToken = issuer.authToken.startsWith('Bearer ') ? issuer.authToken : `Bearer ${issuer.authToken}`;
   const headers = { Authorization: `${authToken}` };
 
-  const response = await axios.post(url, options, { headers });
+  try {
+    const response = await axios.post(url, options, { headers });
 
-  const authTokenResponse = response.headers['x-auth-token'];
+    const authTokenResponse = response.headers['x-auth-token'];
 
-  if (authTokenResponse !== issuer.authToken) {
-    await issuerService.patch(issuerUuid, { authToken: authTokenResponse });
-  }
-
-  return {
-    ...ctx,
-    data: {
-      userUuid,
-      issuerUuid,
-      credential: response.data
+    if (authTokenResponse !== issuer.authToken) {
+      await issuerService.patch(issuerUuid, { authToken: authTokenResponse });
     }
-  };
+
+    return {
+      ...ctx,
+      data: {
+        userUuid,
+        issuerUuid,
+        credential: response.data
+      }
+    };
+  } catch (e) {
+    throw new GeneralError(`Error issuing credential. ${e}`);
+  }
 }
 
 const hooks = {

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Application } from '../declarations';
 import { Issuer } from '../entities/Issuer';
 import { config } from '../config';
+import { GeneralError } from '@feathersjs/errors';
 
 declare module '../declarations' {
   interface ServiceTypes {
@@ -26,18 +27,22 @@ export async function registerIssuer (ctx: HookContext): Promise<HookContext> {
     customerUuid: company.unumIdCustomerUuid
   };
 
-  const response = await axios.post(url, issuerOptions);
+  try {
+    const response = await axios.post(url, issuerOptions);
 
-  return {
-    ...ctx,
-    data: {
-      name: response.data.name,
-      privateKey: response.data.keys.signing.privateKey,
-      did: response.data.did,
-      authToken: response.headers['x-auth-token'],
-      companyUuid: data.companyUuid
-    }
-  };
+    return {
+      ...ctx,
+      data: {
+        name: response.data.name,
+        privateKey: response.data.keys.signing.privateKey,
+        did: response.data.did,
+        authToken: response.headers['x-auth-token'],
+        companyUuid: data.companyUuid
+      }
+    };
+  } catch (e) {
+    throw new GeneralError(`Error registering issuer. ${e}`);
+  }
 }
 
 const hooks = {

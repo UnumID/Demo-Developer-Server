@@ -28,7 +28,7 @@ export class CredentialStatusService {
       const response = await axios.post(url, { credentialId }, { headers });
       return response.data;
     } catch (e) {
-      throw new GeneralError('Error updating credentialStatus');
+      throw new GeneralError(`Error updating credentialStatus. ${e}`);
     }
   }
 

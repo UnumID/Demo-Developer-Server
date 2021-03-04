@@ -28,7 +28,7 @@ export class SmsService {
       const response = await axios.post(url, data, { headers });
       return response.data;
     } catch (e) {
-      throw new GeneralError('Error sending sms.');
+      throw new GeneralError(`Error sending sms. ${e}`);
     }
   }
 
