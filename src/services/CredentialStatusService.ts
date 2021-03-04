@@ -19,7 +19,7 @@ export class CredentialStatusService {
     const issuer = await issuerService.get(data.issuerUuid);
 
     try {
-      const url = `${config.ISSUER_URL}/api/revokeCredentials`;
+      const url = `${config.ISSUER_URL}/api/revokeCredential`;
 
       // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
       const authToken = issuer.authToken.startsWith('Bearer ') ? issuer.authToken : `Bearer ${issuer.authToken}`;
