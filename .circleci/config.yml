@@ -204,7 +204,7 @@ workflows:
           requires:
             - build-and-push-image
           repo: test-customer-app
-          deployment: dev-customer-app
+          deployment: demo-developer-server
           filters:
             branches:
               only:
