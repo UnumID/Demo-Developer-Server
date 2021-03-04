@@ -124,6 +124,8 @@ jobs:
         type: string
       deployment:
         type: string
+      namespace:
+        type: string
 
     executor: aws-eks/python3
     steps:
@@ -134,7 +136,7 @@ jobs:
           cluster-name: << parameters.cluster-name >>
       - run:
           command: |
-            kubectl set image deployment/<< parameters.deployment >> << parameters.deployment >>=${AWS_ECR_URL}/<< parameters.repo >>:"${CIRCLE_TAG}"
+            kubectl set image deployment/<< parameters.deployment >> << parameters.deployment >>=${AWS_ECR_URL}/<< parameters.repo >>:"${CIRCLE_TAG}" -n << parameters.namespace >>
           name: Update container image
 
 
@@ -164,7 +166,8 @@ workflows:
           requires:
             - build-and-push-image-sandbox
           repo: test-customer-app
-          deployment: customer-app
+          deployment: demo-developer-server
+          namespace: demos
           filters:
             tags:
               only: /^v.*/
