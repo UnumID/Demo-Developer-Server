@@ -838,6 +838,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.160.tgz#2f1bba6500bc3cb9a732c6d66a083378fb0b0b29"
   integrity sha512-aP03BShJoO+WVndoVj/WNcB/YBPt+CIU1mvaao2GRAHy2yg4pT/XS4XnVHEQBjPJGycWf/9seKEO9vopTJGkvA==
 
+"@types/lodash@^4.14.168":
+  version "4.14.168"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.168.tgz#fe24632e79b7ade3f132891afff86caa5e5ce008"
+  integrity sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
+
 "@types/mime@*":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.3.tgz#c893b73721db73699943bfc3653b1deb7faa4a3a"
@@ -1011,30 +1016,32 @@
   dependencies:
     eslint-visitor-keys "^1.1.0"
 
-"@unumid/library-crypto@https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.1.1":
+"@unumid/library-crypto@https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.2.0":
   version "0.0.1"
-  resolved "https://github.com/UnumID/Library-Crypto-TypeScript.git#aee817869106d933ba2598d1f48e94c2c42233a6"
+  resolved "https://github.com/UnumID/Library-Crypto-TypeScript.git#c453cc31ab0d283d4fd996359e6c43a9af87732b"
   dependencies:
     "@types/bs58" "^4.0.1"
     bs58 "^4.0.1"
     fast-json-stable-stringify "^2.1.0"
 
-"@unumid/library-issuer-verifier-utility@https://github.com/UnumID/library-issuer-verifier-utility.git#v0.5.0":
+"@unumid/library-issuer-verifier-utility@https://github.com/UnumID/library-issuer-verifier-utility.git#v0.6.0":
   version "1.0.0"
-  resolved "https://github.com/UnumID/library-issuer-verifier-utility.git#64f31acdfcb233e9bf666948a3f63d3d71822d54"
+  resolved "https://github.com/UnumID/library-issuer-verifier-utility.git#b5d55f6fb531983470b38085eac17713c4e6d1e3"
   dependencies:
-    "@unumid/library-crypto" "https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.1.1"
+    "@types/lodash" "^4.14.168"
+    "@unumid/library-crypto" "https://github.com/UnumID/Library-Crypto-TypeScript.git#v1.2.0"
     dotenv "^8.2.0"
     express "^4.17.1"
+    lodash "^4.17.21"
     node-fetch "^2.6.1"
     uuid "^8.2.0"
     winston "^3.3.3"
 
-"@unumid/server-sdk@git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.2.1":
+"@unumid/server-sdk@git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.4.1":
   version "0.1.0"
-  resolved "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#898b0838b4d6b2e88e7e5324b277a6ce8ae16307"
+  resolved "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#9ebb8d7aebc09d5014f624d67ff6dd361b960a76"
   dependencies:
-    "@unumid/library-issuer-verifier-utility" "https://github.com/UnumID/library-issuer-verifier-utility.git#v0.5.0"
+    "@unumid/library-issuer-verifier-utility" "https://github.com/UnumID/library-issuer-verifier-utility.git#v0.6.0"
     dotenv "^8.2.0"
     express "^4.17.1"
     fast-json-stable-stringify "^2.1.0"
@@ -4649,6 +4656,11 @@ lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
+
+lodash@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 logform@^2.2.0:
   version "2.2.0"
