@@ -6,10 +6,7 @@ import { Application } from '../declarations';
 import { config } from '../config';
 import { IssuerInfoMap, EncryptedData } from '../types';
 import logger from '../logger';
-import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
-import { isArrayNotEmpty } from '../utils/isArrayEmpty';
-import { DecryptedPresentation, extractCredentialInfo, Presentation } from '@unumid/server-sdk';
-import { CredentialInfo } from '@unumid/server-sdk/build/types';
+import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk';
 
 export interface PresentationReceiptInfo {
   subjectDid: string;
