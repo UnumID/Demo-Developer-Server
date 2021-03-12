@@ -4,12 +4,13 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 import generateApp from '../../src/generate-app';
-import { Presentation, NoPresentation } from '../../src/types';
+import { NoPresentation } from '../../src/types';
 import { Application } from '../../src/declarations';
 import { Verifier } from '../../src/entities/Verifier';
 import { config } from '../../src/config';
 import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
+import { Presentation } from '@unumid/server-sdk';
 
 jest.mock('axios');
 const mockAxiosPost = axios.post as jest.Mock;
@@ -206,7 +207,7 @@ describe('PresentationService', () => {
         type: [
           'VerifiablePresentation'
         ],
-        verifiableCredential: [
+        verifiableCredentials: [
           {
             '@context': [
               'https://www.w3.org/2018/credentials/v1'
@@ -256,8 +257,8 @@ describe('PresentationService', () => {
         const expectedData = {
           presentation: {
             ...presentation,
-            verifiableCredential: [{
-              ...presentation.verifiableCredential[0],
+            verifiableCredentials: [{
+              ...presentation.verifiableCredentials[0],
               issuanceDate: '2020-09-03T18:42:30.645Z'
             }]
           },
@@ -277,10 +278,10 @@ describe('PresentationService', () => {
           type: 'VerifiablePresentation',
           data: {
             ...presentation,
-            verifiableCredential: [
+            verifiableCredentials: [
               {
-                ...presentation.verifiableCredential[0],
-                issuanceDate: presentation.verifiableCredential[0].issuanceDate.toISOString()
+                ...presentation.verifiableCredentials[0],
+                issuanceDate: presentation.verifiableCredentials[0].issuanceDate.toISOString()
               }
             ]
           }
@@ -299,8 +300,8 @@ describe('PresentationService', () => {
         // convert dates to ISO string format
         // TODO: write a helper function to do this for any object
         const expected = {
-          ...presentation.verifiableCredential[0],
-          issuanceDate: presentation.verifiableCredential[0].issuanceDate.toISOString()
+          ...presentation.verifiableCredentials[0],
+          issuanceDate: presentation.verifiableCredentials[0].issuanceDate.toISOString()
         };
 
         expect(sharedCredentialsResponse.body[0].credential).toEqual(expected);

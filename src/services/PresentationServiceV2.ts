@@ -7,6 +7,8 @@ import { config } from '../config';
 import { IssuerInfoMap, EncryptedData } from '../types';
 import logger from '../logger';
 import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk';
+import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
+import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
 export interface PresentationReceiptInfo {
   subjectDid: string;
@@ -76,13 +78,13 @@ export class PresentationServiceV2 {
     }
     const decryptedPresentation: Presentation = result.presentation as Presentation;
 
-    if (result.type === 'VerifiablePresentation') {
+    if (result.type === 'VerifiablePresentation' && isArrayNotEmpty(decryptedPresentation.verifiableCredentials)) {
       // save shared credentials
       const sharedCredentialService = this.app.service('sharedCredential');
       const issuerService = this.app.service('issuer');
       const userService = this.app.service('user');
 
-      for (const credential of decryptedPresentation.verifiableCredential) {
+      for (const credential of decryptedPresentation.verifiableCredentials) {
         // get saved issuer and user by their dids
         // note that the saved dids will not include key identifier fragments, which may be included in the credential
         const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });

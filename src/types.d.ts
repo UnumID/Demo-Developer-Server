@@ -1,3 +1,5 @@
+import { Presentation } from '@unumid/server-sdk';
+
 export interface Proof {
   created: string;
   signatureValue: string;
@@ -22,14 +24,6 @@ export interface Credential {
   issuanceDate: Date;
   expirationDate?: Date;
   proof: Proof;
-}
-
-export interface Presentation {
-  '@context': ['https://www.w3.org/2018/credentials/v1', ...string[]];
-  type: ['VerifiablePresentation', ...string[]];
-  verifiableCredential: Credential[];
-  presentationRequestUuid: string;
-  proof: Proof
 }
 
 export interface NoPresentation {
