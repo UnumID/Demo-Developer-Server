@@ -50,7 +50,7 @@
     "@feathersjs/feathers": "4.5.8",
     "@feathersjs/socketio": "4.5.8",
     "@feathersjs/transport-commons": "4.5.8",
-    "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.2.1",
+    "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.4.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dedent": "^0.7.0",

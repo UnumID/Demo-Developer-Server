@@ -4,9 +4,10 @@ import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { PresentationOrNoPresentation, Presentation, NoPresentation } from '../types';
+import { PresentationOrNoPresentation, NoPresentation } from '../types';
 import logger from '../logger';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
+import { Presentation } from '@unumid/server-sdk';
 
 export interface VerificationResponse {
   isVerified: boolean;
@@ -83,7 +84,7 @@ export class PresentationService {
     const issuerService = this.app.service('issuer');
     const userService = this.app.service('user');
 
-    for (const credential of presentation.verifiableCredential) {
+    for (const credential of presentation.verifiableCredentials) {
       // get saved issuer and user by their dids
       // note that the saved dids will not include key identifier fragments, which may be included in the credential
       const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });

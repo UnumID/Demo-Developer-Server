@@ -214,7 +214,7 @@ describe('PresentationServiceV2', () => {
         type: [
           'VerifiablePresentation'
         ],
-        verifiableCredential: [
+        verifiableCredentials: [
           {
             '@context': [
               'https://www.w3.org/2018/credentials/v1'
@@ -291,23 +291,24 @@ describe('PresentationServiceV2', () => {
 
       it('returns a success response if the presentation is valid', async () => {
         const verifyReturnValue = {
-          type: ['PresentationVerified'],
-          subject: presentation.verifiableCredential[0].proof.verificationMethod,
+          type: 'VerifiablePresentation',
+          subject: presentation.proof.verificationMethod,
           isVerified: true,
-          credentialTypes: ['VerifiableCredential', 'TestCredential'],
-          credentials: presentation.verifiableCredential
+          // credentialTypes: ['VerifiableCredential', 'TestCredential'],
+          // credentials: presentation.verifiableCredential,
+          presentation
         };
 
         (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
         const response = await supertest(app).post('/presentationV2').send(encryptedPresentation);
         const expected = {
           isVerified: true,
-          type: ['PresentationVerified'],
+          type: 'VerifiablePresentation',
           presentationReceiptInfo: {
-            subjectDid: presentation.verifiableCredential[0].proof.verificationMethod,
+            subjectDid: presentation.proof.verificationMethod.split('#')[0],
             verifierDid: verifier.did,
             holderApp: holderApp.uuid,
-            credentialTypes: ['VerifiableCredential', 'TestCredential'],
+            credentialTypes: ['TestCredential'],
             issuers: {
               [issuer.did]: {
                 did: issuer.did,
@@ -321,11 +322,10 @@ describe('PresentationServiceV2', () => {
 
       it('saves the shared credentials contained in the presentation', async () => {
         const verifyReturnValue = {
-          type: ['PresentationVerified'],
-          subject: presentation.verifiableCredential[0].proof.verificationMethod,
+          type: 'VerifiablePresentation',
+          subject: presentation.proof.verificationMethod,
           isVerified: true,
-          credentialTypes: ['VerifiableCredential', 'TestCredential'],
-          credentials: presentation.verifiableCredential
+          presentation
         };
 
         (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
@@ -338,8 +338,8 @@ describe('PresentationServiceV2', () => {
         // convert dates to ISO string format
         // TODO: write a helper function to do this for any object
         const expected = {
-          ...presentation.verifiableCredential[0],
-          issuanceDate: presentation.verifiableCredential[0].issuanceDate.toISOString()
+          ...presentation.verifiableCredentials[0],
+          issuanceDate: presentation.verifiableCredentials[0].issuanceDate.toISOString()
         };
 
         expect(sharedCredentialsResponse.body[0].credential).toEqual(expected);
@@ -397,25 +397,18 @@ describe('PresentationServiceV2', () => {
           const verifyReturnValue = {
             type: ['NoPresentation'],
             subject: noPresentation.proof.verificationMethod,
-            isVerified: true
-            // credentialTypes: ['No', 'TestCredential'],
-            // credentials: presentation.verifiableCredential
+            isVerified: true,
+            presentation
           };
 
           const expected = {
             isVerified: true,
             type: ['NoPresentation'],
             presentationReceiptInfo: {
-              subjectDid: noPresentation.proof.verificationMethod,
+              subjectDid: noPresentation.proof.verificationMethod.split('#')[0],
               verifierDid: verifier.did,
-              holderApp: holderApp.uuid
-              //   credentialTypes: ['VerifiableCredential', 'TestCredential'],
-            //   issuers: {
-            //     [issuer.did]: {
-            //       did: issuer.did,
-            //       name: issuer.name
-            //     }
-            //   }
+              holderApp: holderApp.uuid,
+              credentialTypes: ['TestCredential']
             }
           };
 

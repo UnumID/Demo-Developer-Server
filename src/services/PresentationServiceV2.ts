@@ -6,6 +6,7 @@ import { Application } from '../declarations';
 import { config } from '../config';
 import { IssuerInfoMap, EncryptedData } from '../types';
 import logger from '../logger';
+import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
@@ -13,7 +14,7 @@ export interface PresentationReceiptInfo {
   subjectDid: string;
   verifierDid: string;
   holderApp: string;
-  credentialTypes?: [string];
+  credentialTypes?: string[];
   issuers?: IssuerInfoMap;
 }
 
@@ -61,8 +62,9 @@ export class PresentationServiceV2 {
 
     // forward request to verifier
     const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });
+    const result: DecryptedPresentation = response.data;
 
-    logger.info('response from verifier app', response.data);
+    logger.info('response from verifier app', result);
 
     // update the verifier's auth token if it was reissued
     const authTokenResponse = response.headers['x-auth-token'];
@@ -71,17 +73,18 @@ export class PresentationServiceV2 {
     }
 
     // return early if the presentation could not be verified
-    if (!response.data.isVerified) {
+    if (!result.isVerified) {
       throw new BadRequest('Verification failed');
     }
+    const decryptedPresentation: Presentation = result.presentation as Presentation;
 
-    if (isArrayNotEmpty(response.data.type) && response.data.type.includes('PresentationVerified')) {
+    if (result.type === 'VerifiablePresentation' && isArrayNotEmpty(decryptedPresentation.verifiableCredentials)) {
       // save shared credentials
       const sharedCredentialService = this.app.service('sharedCredential');
       const issuerService = this.app.service('issuer');
       const userService = this.app.service('user');
 
-      for (const credential of response.data.credentials) {
+      for (const credential of decryptedPresentation.verifiableCredentials) {
         // get saved issuer and user by their dids
         // note that the saved dids will not include key identifier fragments, which may be included in the credential
         const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });
@@ -98,15 +101,18 @@ export class PresentationServiceV2 {
       }
     }
 
+    // extract the relevant credential info to send back to UnumID's SaaS for analytics.
+    const credentialInfo: CredentialInfo = extractCredentialInfo(decryptedPresentation);
+
     const presentationReceiptInfo: PresentationReceiptInfo = {
-      subjectDid: response.data.subject,
-      credentialTypes: response.data.credentialTypes,
+      subjectDid: credentialInfo.subjectDid,
+      credentialTypes: credentialInfo.credentialTypes,
       verifierDid: verifier.did,
       holderApp: presentationRequest.holderApp.uuid,
-      issuers: response.data.type && response.data.type.includes('PresentationVerified') ? presentationRequest.issuers : undefined
+      issuers: result.type === 'VerifiablePresentation' ? presentationRequest.issuers : undefined
     };
 
-    return { isVerified: true, type: response.data.type, presentationReceiptInfo };
+    return { isVerified: true, type: result.type, presentationReceiptInfo };
   }
 
   setup (app: Application): void {
