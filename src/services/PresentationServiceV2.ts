@@ -74,7 +74,7 @@ export class PresentationServiceV2 {
 
     // return early if the presentation could not be verified
     if (!result.isVerified) {
-      throw new BadRequest('Verification failed');
+      throw new BadRequest(`Verification failed: ${result.message}`);
     }
     const decryptedPresentation: Presentation = result.presentation as Presentation;
 
