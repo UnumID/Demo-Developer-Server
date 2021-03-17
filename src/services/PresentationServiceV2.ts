@@ -64,7 +64,7 @@ export class PresentationServiceV2 {
     const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });
     const result: DecryptedPresentation = response.data;
 
-    logger.info('response from verifier app', result);
+    logger.info(`response from verifier app ${result}`);
 
     // update the verifier's auth token if it was reissued
     const authTokenResponse = response.headers['x-auth-token'];

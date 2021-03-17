@@ -1037,9 +1037,9 @@
     uuid "^8.2.0"
     winston "^3.3.3"
 
-"@unumid/server-sdk@git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.4.3":
+"@unumid/server-sdk@git+ssh://git@github.com/UnumID/server-sdk-typescript.git#v0.4.4":
   version "0.1.0"
-  resolved "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#2d66c1db1039fe54ee4ad2b12278f659494e096e"
+  resolved "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#0719618c19871900404be1e999f973e6e7e05877"
   dependencies:
     "@unumid/library-issuer-verifier-utility" "https://github.com/UnumID/library-issuer-verifier-utility.git#v0.6.0"
     dotenv "^8.2.0"
