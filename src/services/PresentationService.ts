@@ -21,11 +21,14 @@ export function isPresentation (presentation: PresentationOrNoPresentation): pre
 }
 
 export function publisher (app: Application) {
-  return async function actualPublisher (response: any): Promise<Channel> {
+  return async function actualPublisher (response: DemoPresentationDto | DemoNoPresentationDto): Promise<Channel> {
     console.log('response', response);
     const presentationRequestService = app.service('presentationRequest');
-    const presentationRequest = await presentationRequestService.get(response.data.presentationRequestUuid);
+    const prUuid = (response as DemoPresentationDto).presentation?.presentationRequestUuid || (response as DemoNoPresentationDto).noPresentation?.presentationRequestUuid;
+    const presentationRequest = await presentationRequestService.get(prUuid);
+    console.log(`response prUuid ${prUuid}`);
     const { userUuid } = presentationRequest.metadata;
+    console.log(`response user uuid ${userUuid}`);
     return app.channel(userUuid);
   };
 }
