@@ -21,7 +21,7 @@ export function isPresentation (presentation: PresentationOrNoPresentation): pre
 }
 
 export function publisher (app: Application) {
-  return async function actualPublisher (response: DemoPresentationDto | DemoNoPresentationDto): Promise<Channel> {
+  return async function actualPublisher (response: any): Promise<Channel> {
     console.log('response', response);
     const presentationRequestService = app.service('presentationRequest');
     const prUuid = (response as DemoPresentationDto).presentation?.presentationRequestUuid || (response as DemoNoPresentationDto).noPresentation?.presentationRequestUuid;
