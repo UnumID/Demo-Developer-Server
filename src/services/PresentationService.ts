@@ -25,7 +25,7 @@ export function publisher (app: Application) {
 /**
  * This service handles encrypted presentations from the saas where v1 handle plain text presentation from the holder sdk.
  */
-export class PresentationServiceV2 {
+export class PresentationService {
   private app!: Application;
 
   async create (presentation: EncryptedPresentation): Promise<VerificationResponse> {
@@ -128,12 +128,12 @@ export class PresentationServiceV2 {
 
 declare module '../declarations' {
   interface ServiceTypes {
-    presentationV2: PresentationServiceV2 & ServiceAddons<PresentationServiceV2>
+    presentation: PresentationService & ServiceAddons<PresentationService>
   }
 }
 
 export default function (app: Application): void {
-  app.use('/presentationV2', new PresentationServiceV2());
-  const service = app.service('presentationV2');
+  app.use('/presentation', new PresentationService());
+  const service = app.service('presentation');
   service.publish(publisher(app));
 }
