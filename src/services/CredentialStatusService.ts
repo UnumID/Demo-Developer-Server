@@ -17,15 +17,16 @@ export class CredentialStatusService {
   async patch (credentialId: string, data: CredentialStatusPatchOptions): Promise<SuccessResponse> {
     const issuerService = this.app.service('issuer');
     const issuer = await issuerService.get(data.issuerUuid);
+    const status = data.status;
 
     try {
-      const url = `${config.ISSUER_URL}/api/revokeCredential`;
+      const url = `${config.ISSUER_URL}/api/updateCredentialStatus`;
 
       // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
       const authToken = issuer.authToken.startsWith('Bearer ') ? issuer.authToken : `Bearer ${issuer.authToken}`;
       const headers = { Authorization: `${authToken}` };
 
-      const response = await axios.post(url, { credentialId }, { headers });
+      const response = await axios.post(url, { credentialId, status }, { headers });
       return response.data;
     } catch (e) {
       throw new GeneralError(`Error updating credentialStatus. ${e}`);

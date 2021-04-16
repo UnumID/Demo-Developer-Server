@@ -1,7 +1,7 @@
 import { Entity, Property, ManyToOne } from 'mikro-orm';
 
 import { BaseEntity, BaseEntityOptions } from './BaseEntity';
-import { Credential } from '../types';
+import { Credential } from '@unumid/types';
 import { User } from './User';
 import { Issuer } from './Issuer';
 import { Verifier } from './Verifier';
