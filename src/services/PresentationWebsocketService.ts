@@ -29,7 +29,7 @@ export function publisher (app: Application) {
   };
 }
 
-export class PresentationService {
+export class PresentationWebsocketService {
   private app!: Application;
 
   async create (verificationResponse: DemoPresentationDto | DemoNoPresentationDto): Promise<DemoPresentationDto | DemoNoPresentationDto> {
@@ -43,12 +43,12 @@ export class PresentationService {
 
 declare module '../declarations' {
   interface ServiceTypes {
-    presentation: PresentationService & ServiceAddons<PresentationService>
+    presentationWebsocket: PresentationWebsocketService & ServiceAddons<PresentationWebsocketService>
   }
 }
 
 export default function (app: Application): void {
-  app.use('/presentation', new PresentationService());
-  const service = app.service('presentation');
+  app.use('/presentationWebsocket', new PresentationWebsocketService());
+  const service = app.service('presentationWebsocket');
   service.publish(publisher(app));
 }

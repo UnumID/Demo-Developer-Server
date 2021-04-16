@@ -5,7 +5,7 @@ import user from './UserService';
 import issuedCredential from './IssuedCredentialService';
 import verifier from './VerifierService';
 import presentationRequest from './PresentationRequestService';
-import presentation from './PresentationService';
+import presentationWebsocket from './PresentationWebsocketService';
 import presentationV2 from './PresentationServiceV2';
 import sharedCredential from './SharedCredentialService';
 import holderApp from './HolderAppService';
@@ -21,7 +21,7 @@ export default function (app: Application): void {
   app.configure(issuedCredential);
   app.configure(verifier);
   app.configure(presentationRequest);
-  app.configure(presentation);
+  app.configure(presentationWebsocket);
   app.configure(presentationV2);
   app.configure(sharedCredential);
   app.configure(holderApp);

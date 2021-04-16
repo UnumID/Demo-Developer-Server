@@ -33,7 +33,7 @@ export class PresentationServiceV2 {
     const presentationRequestUuid = presentationRequestInfo.presentationRequest.uuid;
 
     const presentationRequestService = this.app.service('presentationRequest');
-    const presentationWebsocketService = this.app.service('presentation');
+    const presentationWebsocketService = this.app.service('presentationWebsocket');
     const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
     const verifier = await presentationRequest._verifier.init();
     const verifierService = this.app.service('verifier');
