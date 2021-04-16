@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { PresentationOrNoPresentation, NoPresentation } from '../types';
+import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types';
 import logger from '../logger';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { Presentation } from '@unumid/server-sdk';

@@ -1,33 +1,35 @@
 import { ServiceAddons } from '@feathersjs/feathers';
 import { BadRequest } from '@feathersjs/errors';
 import axios from 'axios';
+import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 
 import { Application } from '../declarations';
 import { config } from '../config';
-import { IssuerInfoMap, EncryptedData } from '../types';
 import logger from '../logger';
-import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk';
-import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
-export interface PresentationReceiptInfo {
-  subjectDid: string;
-  verifierDid: string;
-  holderApp: string;
-  credentialTypes?: string[];
-  issuers?: IssuerInfoMap;
-}
+import { IssuerInfoMap, EncryptedData, EncryptedPresentation, PresentationReceiptInfo } from '@unumid/types';
+import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk';
+import { VerificationResponse } from '@unumid/demo-types';
 
-export interface VerificationResponse {
-  isVerified: boolean;
-  type: 'VerifiablePresentation' | 'NoPresentation';
-  presentationReceiptInfo: PresentationReceiptInfo;
-}
+// export interface PresentationReceiptInfo {
+//   subjectDid: string;
+//   verifierDid: string;
+//   holderApp: string;
+//   credentialTypes?: string[];
+//   issuers?: IssuerInfoMap;
+// }
 
-export interface EncryptedPresentation {
-  presentationRequestUuid: string;
-  encryptedPresentation: EncryptedData;
-}
+// export interface VerificationResponse {
+//   isVerified: boolean;
+//   type: 'VerifiablePresentation' | 'NoPresentation';
+//   presentationReceiptInfo: PresentationReceiptInfo;
+// }
+
+// export interface EncryptedPresentation {
+//   presentationRequestUuid: string;
+//   encryptedPresentation: EncryptedData;
+// }
 
 export function publisher (app: Application) {
   return async function actualPublisher (response: any): Promise<Channel> {
@@ -46,7 +48,8 @@ export class PresentationServiceV2 {
   private app!: Application;
 
   async create (presentation: EncryptedPresentation): Promise<VerificationResponse> {
-    const { presentationRequestUuid, encryptedPresentation } = presentation;
+    const { presentationRequestInfo, encryptedPresentation } = presentation;
+    const presentationRequestUuid = presentationRequestInfo.presentationRequest.uuid;
 
     const presentationRequestService = this.app.service('presentationRequest');
     const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
@@ -54,7 +57,7 @@ export class PresentationServiceV2 {
     const verifierService = this.app.service('verifier');
 
     // verify presentation
-    const url = `${config.VERIFIER_URL}/api/verifyEncryptedPresentation`;
+    const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
 
     // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
     const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
@@ -112,7 +115,7 @@ export class PresentationServiceV2 {
       issuers: result.type === 'VerifiablePresentation' ? presentationRequest.issuers : undefined
     };
 
-    return { isVerified: true, type: result.type, presentationReceiptInfo };
+    return { isVerified: true, type: result.type, presentationReceiptInfo, presentationRequestUuid: presentationRequestInfo.presentationRequest.uuid };
   }
 
   setup (app: Application): void {
