@@ -9,8 +9,8 @@
     "feathers"
   ],
   "author": {
-    "name": "jacobleesinger",
-    "email": "jacobleesinger@gmail.com"
+    "name": "UnumID Admin",
+    "email": "admin@unum.id"
   },
   "contributors": [],
   "bugs": {},
@@ -51,7 +51,7 @@
     "@feathersjs/socketio": "4.5.8",
     "@feathersjs/transport-commons": "4.5.8",
     "@unumid/demo-types": "git+ssh://git@github.com/UnumID/demo-types#v0.4.2",
-    "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#1.3.2",
+    "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#1.4.0",
     "@unumid/types": "https://github.com/UnumID/types.git#1.4.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
