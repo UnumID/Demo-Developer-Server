@@ -8,9 +8,9 @@ import { config } from '../config';
 import logger from '../logger';
 import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
-import { EncryptedPresentation, NoPresentation, PresentationReceiptInfo } from '@unumid/types';
-import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk';
-import { DemoNoPresentationDto, DemoPresentationDto, VerificationResponse } from '@unumid/demo-types';
+import { EncryptedPresentation, NoPresentation, PresentationReceiptInfo } from '@unumid/types-deprecated';
+import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk-deprecated';
+import { DemoNoPresentationDto, DemoPresentationDto, VerificationResponse } from '@unumid/demo-types-deprecated';
 
 export function publisher (app: Application) {
   return async function actualPublisher (response: any): Promise<Channel> {

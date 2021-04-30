@@ -1,10 +1,10 @@
 import { ServiceAddons } from '@feathersjs/feathers';
 
 import { Application } from '../declarations';
-import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types';
+import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-deprecated';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
-import { Presentation } from '@unumid/server-sdk';
-import { DemoNoPresentationDto, DemoPresentationDto } from '@unumid/demo-types';
+import { Presentation } from '@unumid/server-sdk-deprecated';
+import { DemoNoPresentationDto, DemoPresentationDto } from '@unumid/demo-types-deprecated';
 
 export interface VerificationPresentationResponse {
   isVerified: boolean;

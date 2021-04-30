@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import supertest from 'supertest';
 import axios from 'axios';
-import { v4 as uuidv4, v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import dedent from 'dedent';
 
 import generateApp from '../../src/generate-app';
@@ -12,7 +12,7 @@ import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
 import { encrypt } from '@unumid/library-crypto';
 import { Issuer } from '../../src/entities/Issuer';
-import { EncryptedPresentation, Presentation, NoPresentation, EncryptedData } from '@unumid/types';
+import { EncryptedPresentation, Presentation, NoPresentation, EncryptedData } from '@unumid/types-deprecated';
 
 const now = new Date();
 
