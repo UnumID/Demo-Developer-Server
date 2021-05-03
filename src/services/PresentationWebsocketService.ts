@@ -1,4 +1,4 @@
-import { ServiceAddons } from '@feathersjs/feathers';
+import { Params, ServiceAddons } from '@feathersjs/feathers';
 
 import { Application } from '../declarations';
 import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-deprecated';
@@ -33,7 +33,7 @@ export function publisher (app: Application) {
 export class PresentationWebsocketService {
   private app!: Application;
 
-  async create (verificationResponse: DemoPresentationDto | DemoPresentationDtoDeprecated | DemoNoPresentationDtoDeprecated): Promise<DemoPresentationDtoDeprecated | DemoNoPresentationDtoDeprecated | DemoPresentationDto> {
+  async create (verificationResponse: DemoPresentationDto | DemoPresentationDtoDeprecated | DemoNoPresentationDtoDeprecated, params: Params): Promise<DemoPresentationDtoDeprecated | DemoNoPresentationDtoDeprecated | DemoPresentationDto> {
     return verificationResponse;
   }
 

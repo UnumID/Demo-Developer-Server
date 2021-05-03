@@ -1,10 +1,11 @@
-import { ServiceAddons } from '@feathersjs/feathers';
+import { Params, ServiceAddons } from '@feathersjs/feathers';
 import { GeneralError } from '@feathersjs/errors';
 import axios from 'axios';
 
 import { Application } from '../declarations';
 import { config } from '../config';
 import { SuccessResponse } from '../types';
+import { WithVersion } from '@unumid/demo-types';
 
 interface CredentialStatusPatchOptions {
   issuerUuid: string;
@@ -14,9 +15,9 @@ interface CredentialStatusPatchOptions {
 export class CredentialStatusService {
   private app!: Application;
 
-  async patch (credentialId: string, data: CredentialStatusPatchOptions): Promise<SuccessResponse> {
+  async patch (credentialId: string, data: CredentialStatusPatchOptions, params: Params): Promise<SuccessResponse> {
     const issuerService = this.app.service('issuer');
-    const issuer = await issuerService.get(data.issuerUuid);
+    const issuer = await issuerService.get(data.issuerUuid, params);
     const status = data.status;
 
     try {
@@ -24,7 +25,8 @@ export class CredentialStatusService {
 
       // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
       const authToken = issuer.authToken.startsWith('Bearer ') ? issuer.authToken : `Bearer ${issuer.authToken}`;
-      const headers = { Authorization: `${authToken}` };
+      // const headers = { Authorization: `${authToken}`, version: data.version };
+      const headers = { Authorization: `${authToken}`, version: params.headers?.version };
 
       const response = await axios.post(url, { credentialId, status }, { headers });
       return response.data;

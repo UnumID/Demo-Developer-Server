@@ -33,7 +33,7 @@ export function publisher (app: Application) {
 export class PresentationService {
   private app!: Application;
 
-  async create (presentation: WithVersion<EncryptedPresentation>, params?: Params): Promise<VerificationResponse | VerificationResponseDeprecated> {
+  async create (presentation: EncryptedPresentation, params: Params): Promise<VerificationResponse | VerificationResponseDeprecated> {
     const { presentationRequestInfo, encryptedPresentation } = presentation;
     const presentationRequestUuid = presentationRequestInfo.presentationRequest.uuid;
 
@@ -43,6 +43,7 @@ export class PresentationService {
     const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
     const verifier = await presentationRequest._verifier.init();
     const verifierService = this.app.service('verifier');
+    const version = params.headers?.version; // ought to be defined via the global before hook
 
     // verify presentation
     const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
@@ -50,9 +51,9 @@ export class PresentationService {
     // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
     const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
     // const headers = { Authorization: `${authToken}`, version: presentation.version };
-    const headers = { Authorization: `${authToken}`, version: params?.headers?.version };
+    const headers = { Authorization: `${authToken}`, version };
 
-    if (lt(presentation.version, '2.0.0')) {
+    if (lt(version, '2.0.0')) {
     // forward request to verifier
       const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });
       const result: DecryptedPresentation = response.data;
@@ -103,7 +104,7 @@ export class PresentationService {
           createdAt: new Date(), // unused in this demo
           updatedAt: new Date() // unused in this demo
         };
-        await presentationWebsocketService.create(demoVerification);
+        await presentationWebsocketService.create(demoVerification, params);
       } else {
         const demoVerification: DemoNoPresentationDto = {
           isVerified: true,
@@ -112,7 +113,7 @@ export class PresentationService {
           createdAt: new Date(), // unused in this demo
           updatedAt: new Date() // unused in this demo
         };
-        await presentationWebsocketService.create(demoVerification);
+        await presentationWebsocketService.create(demoVerification, params);
       }
 
       // extract the relevant credential info to send back to UnumID's SaaS for analytics.

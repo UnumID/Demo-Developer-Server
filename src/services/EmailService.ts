@@ -1,4 +1,4 @@
-import { ServiceAddons } from '@feathersjs/feathers';
+import { Params, ServiceAddons } from '@feathersjs/feathers';
 import { GeneralError } from '@feathersjs/errors';
 import axios from 'axios';
 
@@ -15,16 +15,16 @@ interface EmailOptions {
 export class EmailService {
   private app!: Application;
 
-  async create (data: EmailOptions): Promise<SuccessResponse> {
+  async create (data: EmailOptions, params: Params): Promise<SuccessResponse> {
     const verifierService = this.app.service('verifier');
-    const [verifier] = await verifierService.find();
+    const [verifier] = await verifierService.find(params);
 
     try {
       const url = `${config.VERIFIER_URL}/api/sendEmail`;
 
       // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
       const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
-      const headers = { Authorization: `${authToken}` };
+      const headers = { Authorization: `${authToken}`, version: params?.headers?.version }; // headers ought to be always defined thanks to the pre-create hook
 
       const response = await axios.post(url, data, { headers });
       return response.data;

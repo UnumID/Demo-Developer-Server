@@ -29,7 +29,7 @@ export function publisher (app: Application) {
 export class PresentationServiceV2 {
   private app!: Application;
 
-  async create (presentation: WithVersion<EncryptedPresentation>, params?: Params): Promise<VerificationResponse> {
+  async create (presentation: EncryptedPresentation, params: Params): Promise<VerificationResponse> {
     const { presentationRequestInfo, encryptedPresentation } = presentation;
     const presentationRequestUuid = presentationRequestInfo.presentationRequest.uuid;
 
@@ -38,6 +38,7 @@ export class PresentationServiceV2 {
     const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
     const verifier = await presentationRequest._verifier.init();
     const verifierService = this.app.service('verifier');
+    const version = params.headers?.version; // ought to be defined via the global before hook
 
     // verify presentation
     const url = `${config.VERIFIER_URL}/api/verifyPresentation`;
@@ -45,7 +46,7 @@ export class PresentationServiceV2 {
     // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
     const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
     // const headers = { Authorization: `${authToken}`, params: presentation.version };
-    const headers = { Authorization: `${authToken}`, version: params?.headers?.version }; // headers ought to be always defined thanks to the pre-create hook
+    const headers = { Authorization: `${authToken}`, version };
 
     try {
       // forward request to verifier
@@ -99,7 +100,7 @@ export class PresentationServiceV2 {
         createdAt: new Date(), // unused in this demo
         updatedAt: new Date() // unused in this demo
       };
-      await presentationWebsocketService.create(demoVerification);
+      await presentationWebsocketService.create(demoVerification, params);
       // if (result.type === 'VerifiablePresentation') {
       //   const demoVerification: DemoPresentationDto = {
       //     isVerified: true,

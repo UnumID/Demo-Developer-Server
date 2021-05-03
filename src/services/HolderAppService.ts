@@ -13,10 +13,10 @@ declare module '../declarations' {
 }
 
 export async function registerHolderApp (ctx: HookContext): Promise<HookContext> {
-  const { data } = ctx;
+  const { data, params } = ctx;
 
   const companyService = ctx.app.service('company');
-  const company = await companyService.get(data.companyUuid);
+  const company = await companyService.get(data.companyUuid, params);
 
   const url = `${config.SAAS_URL}/holderApp`;
   const saasHolderAppOptions = {
@@ -25,7 +25,7 @@ export async function registerHolderApp (ctx: HookContext): Promise<HookContext>
     customerUuid: company.unumIdCustomerUuid
   };
 
-  const headers = { Authorization: `Bearer ${data.apiKey}` };
+  const headers = { Authorization: `Bearer ${data.apiKey}`, version: params.headers?.version };
 
   const response = await axios.post(url, saasHolderAppOptions, { headers });
 
