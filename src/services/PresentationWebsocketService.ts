@@ -4,7 +4,8 @@ import { Application } from '../declarations';
 import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-deprecated';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { Presentation } from '@unumid/server-sdk-deprecated';
-import { DemoNoPresentationDto, DemoPresentationDto } from '@unumid/demo-types-deprecated';
+import { DemoNoPresentationDto as DemoNoPresentationDtoDeprecated, DemoPresentationDto as DemoPresentationDtoDeprecated } from '@unumid/demo-types-deprecated';
+import { DemoPresentationDto } from '@unumid/demo-types';
 
 export interface VerificationPresentationResponse {
   isVerified: boolean;
@@ -20,7 +21,7 @@ export function publisher (app: Application) {
   return async function actualPublisher (response: any): Promise<Channel> {
     console.log('response', response);
     const presentationRequestService = app.service('presentationRequest');
-    const prUuid = (response as DemoPresentationDto).presentation?.presentationRequestUuid || (response as DemoNoPresentationDto).noPresentation?.presentationRequestUuid;
+    const prUuid = (response as DemoPresentationDtoDeprecated).presentation?.presentationRequestUuid || (response as DemoNoPresentationDtoDeprecated).noPresentation?.presentationRequestUuid;
     const presentationRequest = await presentationRequestService.get(prUuid);
     console.log(`response prUuid ${prUuid}`);
     const { userUuid } = presentationRequest.metadata;
@@ -32,7 +33,7 @@ export function publisher (app: Application) {
 export class PresentationWebsocketService {
   private app!: Application;
 
-  async create (verificationResponse: DemoPresentationDto | DemoNoPresentationDto): Promise<DemoPresentationDto | DemoNoPresentationDto> {
+  async create (verificationResponse: DemoPresentationDto | DemoPresentationDtoDeprecated | DemoNoPresentationDtoDeprecated): Promise<DemoPresentationDtoDeprecated | DemoNoPresentationDtoDeprecated | DemoPresentationDto> {
     return verificationResponse;
   }
 

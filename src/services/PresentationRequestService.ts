@@ -16,7 +16,7 @@ interface RequestOptions {
 }
 
 export async function sendRequest (ctx: HookContext): Promise<HookContext> {
-  const { app, data } = ctx;
+  const { app, data, params } = ctx;
 
   const issuerService = app.service('issuer');
   const verifierService = app.service('verifier');
@@ -44,7 +44,8 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
 
   // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
   const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
-  const headers = { Authorization: authToken };
+  // const headers = { Authorization: authToken, version: data.version };
+  const headers = { Authorization: authToken, version: params.headers?.version }; // ought to be defined thanks to global hook
 
   try {
     const response = await axios.post(url, options, { headers });

@@ -1,12 +1,46 @@
 // Application hooks that run for every service
+import { BadRequest } from '@feathersjs/errors';
 import { HookContext } from '@feathersjs/feathers';
 import { pick } from 'lodash';
+import { valid } from 'semver';
+import { updateVersionHeaderParam } from './utils/updateVersionHeaderParam';
 
 import logger from './logger';
 
 function logRequest (ctx: HookContext): void {
   const { path, method, id, data } = ctx;
   logger.info(`${path}#${method}${id ? ` id: ${id}` : ''}${data ? ` data: ${JSON.stringify(data)}}` : ''}`);
+}
+
+function handleVersion (ctx: HookContext): void {
+  let { params, data } = ctx;
+  if (params.headers?.version) {
+    if (!valid(params.headers.version)) {
+      logger.error(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
+      throw new BadRequest(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
+    }
+    data.version = params.headers.version; // adding to input data
+  } else {
+    // Actually going to allow request without version headers for backwards compatibility
+    // logger.error('Request made without a version header.');
+    // throw new BadRequest('Version header is required.');
+    if (data) {
+      data.version = '1.0.0'; // base version
+      // params = {
+      //   ...params,
+      //   headers: {
+      //     ...params.headers,
+      //     version: '1.0.0'
+      //   }
+      // };
+      params = updateVersionHeaderParam(params, '1.0.0');
+      // params.headers.version = '1.0.0';
+    } else {
+      data = { version: '1.0.0' };
+    }
+  }
+
+  logger.info(`Request made with version ${data.version}`);
 }
 
 function logResult (ctx: HookContext): HookContext {
@@ -38,7 +72,8 @@ function logError (ctx: HookContext): void {
 
 export default {
   before: {
-    all: [logRequest],
+    all: [logRequest, handleVersion],
+    // all: [logRequest],
     find: [],
     get: [],
     create: [],
