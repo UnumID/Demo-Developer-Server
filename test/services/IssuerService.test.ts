@@ -29,6 +29,11 @@ describe('Issuer service', () => {
     },
     data: {
       name: 'ACME Inc. TEST Issuer'
+    },
+    params: {
+      headers: {
+        version: '1.0.0'
+      }
     }
   } as unknown as HookContext;
 

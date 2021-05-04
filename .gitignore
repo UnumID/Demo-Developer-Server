@@ -2,9 +2,6 @@
 logs
 *.log
 
-# VS Code
-.vscode
-
 # Runtime data
 pids
 *.pid
@@ -35,15 +32,12 @@ node_modules
 .project
 .classpath
 .c9/
-*.launch
 .settings/
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
 
 ### Linux ###

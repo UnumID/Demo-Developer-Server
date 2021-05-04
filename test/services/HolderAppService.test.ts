@@ -34,6 +34,11 @@ describe('HolderAppService', () => {
       uriScheme: 'acme://',
       companyUuid: dummyCompany.uuid,
       apiKey: 'J6A5J3FEJXi+2Xh6JUWpXl5+318dfi1kcwxnMMQKrfc='
+    },
+    params: {
+      headers: {
+        version: '1.0.0'
+      }
     }
   } as unknown as HookContext;
 

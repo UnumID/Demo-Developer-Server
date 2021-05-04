@@ -9,16 +9,16 @@ RUN apk update && \
 
 WORKDIR /app
 
-COPY package*.json /app/
-COPY yarn.lock /app/
+COPY package.json /app/
+COPY package-lock.json /app/
 
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-# RUN yarn install
-RUN --mount=type=ssh,id=github yarn install
+# RUN npm install
+RUN --mount=type=ssh,id=github npm install
 
 COPY ./ /app/
 
-RUN yarn build
+RUN npm run build
 
-CMD [ "yarn", "start" ]
+CMD [ "npm", "start" ]

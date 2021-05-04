@@ -11,7 +11,11 @@ import { IssuedCredential } from '../../src/entities/IssuedCredential';
 import { resetDb } from '../resetDb';
 
 jest.mock('axios');
-describe('IssuedCredential service', () => {
+/**
+ * Not a real separate service because nothing needs to change in this app but it does hit the iv web app with version 2.0.0 which has a different response body.
+ * Credential attribute CredentialSubject is stringified.
+ */
+describe('Issued CredentialV2 service tests', () => {
   const now = new Date();
   const dummyCompany = {
     uuid: uuidv4(),
@@ -46,10 +50,10 @@ describe('IssuedCredential service', () => {
   const dummyCredential = {
     '@context': ['https://www.w3.org/2018/credentials/v1'],
     id: '0c93beb0-2605-4650-b698-3fd92eb110b9',
-    credentialSubject: {
+    credentialSubject: JSON.stringify({
       id: dummyUser.did,
       test: 'test'
-    },
+    }),
     credentialStatus: {
       id: 'https://api.dev-unumid.org/credentialStatus/0c93beb0-2605-4650-b698-3fd92eb110b9',
       type: 'CredentialStatus'
@@ -94,7 +98,7 @@ describe('IssuedCredential service', () => {
         },
         params: {
           headers: {
-            version: '1.0.0'
+            version: '2.0.0'
           }
         }
       } as unknown as HookContext;
@@ -109,8 +113,8 @@ describe('IssuedCredential service', () => {
         expect(mockService).toBeCalledWith('issuer');
         expect(mockService).toBeCalledWith('user');
 
-        expect(mockGetIssuer).toBeCalledWith(dummyIssuer.uuid, { headers: { version: '1.0.0' } });
-        expect(mockGetUser).toBeCalledWith(dummyUser.uuid, { headers: { version: '1.0.0' } });
+        expect(mockGetIssuer).toBeCalledWith(dummyIssuer.uuid, { headers: { version: '2.0.0' } });
+        expect(mockGetUser).toBeCalledWith(dummyUser.uuid, { headers: { version: '2.0.0' } });
       });
 
       it('issues a credential', async () => {
@@ -131,7 +135,7 @@ describe('IssuedCredential service', () => {
       it('sends the issuer auth token to the issuer app', async () => {
         await issueCredential(ctx);
 
-        const expected = { headers: { Authorization: `Bearer ${dummyIssuer.authToken}`, version: '1.0.0' } };
+        const expected = { headers: { Authorization: `Bearer ${dummyIssuer.authToken}`, version: '2.0.0' } };
 
         expect((axios.post as jest.Mock).mock.calls[0][2]).toEqual(expected);
       });
@@ -182,7 +186,7 @@ describe('IssuedCredential service', () => {
             name: 'ACME, Inc.',
             unumIdCustomerUuid: '8125068d-e8c9-4706-83a0-be1485bf7265'
           };
-          const companyResponse = await supertest(app).post('/company').send(companyOptions);
+          const companyResponse = await supertest(app).post('/company').send(companyOptions).set({ version: '2.0.0' });
 
           const issuerOptions = {
             name: 'ACME Inc. TEST Issuer',
@@ -190,14 +194,14 @@ describe('IssuedCredential service', () => {
             issuerApiKey: 'VjYaaxArxZP+EdvatoHz7hRZCE8wS3g+yBNhqJpCkrY='
           };
 
-          const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
+          const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions).set({ version: '2.0.0' });
 
           const userOptions = {
             companyUuid: companyResponse.body.uuid,
             did: `did:unum:${uuidv4()}`
           };
 
-          const userResponse = await supertest(app).post('/user').send(userOptions);
+          const userResponse = await supertest(app).post('/user').send(userOptions).set({ version: '2.0.0' });
 
           const options = {
             issuerUuid: issuerResponse.body.uuid,
@@ -206,7 +210,7 @@ describe('IssuedCredential service', () => {
             claims: { test: 'test' }
           };
 
-          const credentialResponse = await supertest(app).post('/credential').send(options);
+          const credentialResponse = await supertest(app).post('/credential').send(options).set({ version: '2.0.0' });
           issuedCredential = credentialResponse.body;
         });
 

@@ -6,3 +6,15 @@ export const handleError = (error: CustError): void => {
     throw new BadRequest(error.message);
   }
 };
+
+export const handleIssuerVerifierWebAppError = (errorResponse: any): void => {
+  const data = errorResponse?.data;
+  const status = errorResponse?.status;
+  if (data) {
+    if (data.name === 'CryptoError' && data.code) {
+      throw new BadRequest(`CryptoError: ${data.code}`);
+    } else if (status === 400) {
+      throw new BadRequest(`${data}`);
+    }
+  }
+};

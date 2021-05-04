@@ -14,13 +14,14 @@ declare module '../declarations' {
 }
 
 export async function registerIssuer (ctx: HookContext): Promise<HookContext> {
-  const { data } = ctx;
+  const { data, params } = ctx;
 
   const companyService = ctx.app.service('company');
 
-  const company = await companyService.get(data.companyUuid);
+  const company = await companyService.get(data.companyUuid, params);
 
   const url = `${config.ISSUER_URL}/api/register`;
+  const headers = { version: params.headers?.version }; // ought to be defined via the global before hook
   const issuerOptions = {
     ...data,
     apiKey: data.issuerApiKey,
@@ -28,7 +29,7 @@ export async function registerIssuer (ctx: HookContext): Promise<HookContext> {
   };
 
   try {
-    const response = await axios.post(url, issuerOptions);
+    const response = await axios.post(url, issuerOptions, { headers });
 
     return {
       ...ctx,
