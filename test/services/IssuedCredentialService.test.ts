@@ -91,6 +91,11 @@ describe('IssuedCredential service', () => {
           issuerUuid: dummyIssuer.uuid,
           userUuid: dummyUser.uuid,
           type: 'TestCredential'
+        },
+        params: {
+          headers: {
+            version: '1.0.0'
+          }
         }
       } as unknown as HookContext;
 
@@ -104,8 +109,8 @@ describe('IssuedCredential service', () => {
         expect(mockService).toBeCalledWith('issuer');
         expect(mockService).toBeCalledWith('user');
 
-        expect(mockGetIssuer).toBeCalledWith(dummyIssuer.uuid);
-        expect(mockGetUser).toBeCalledWith(dummyUser.uuid);
+        expect(mockGetIssuer).toBeCalledWith(dummyIssuer.uuid, { headers: { version: '1.0.0' } });
+        expect(mockGetUser).toBeCalledWith(dummyUser.uuid, { headers: { version: '1.0.0' } });
       });
 
       it('issues a credential', async () => {
@@ -126,7 +131,7 @@ describe('IssuedCredential service', () => {
       it('sends the issuer auth token to the issuer app', async () => {
         await issueCredential(ctx);
 
-        const expected = { headers: { Authorization: `Bearer ${dummyIssuer.authToken}` } };
+        const expected = { headers: { Authorization: `Bearer ${dummyIssuer.authToken}`, version: '1.0.0' } };
 
         expect((axios.post as jest.Mock).mock.calls[0][2]).toEqual(expected);
       });

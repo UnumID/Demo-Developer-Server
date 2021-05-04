@@ -40,6 +40,11 @@ describe('Verifier service', () => {
       data: {
         name: 'ACME Inc. TEST Verifier',
         companyUuid: dummyCompany.uuid
+      },
+      params: {
+        headers: {
+          version: '1.0.0'
+        }
       }
     } as unknown as HookContext;
 
