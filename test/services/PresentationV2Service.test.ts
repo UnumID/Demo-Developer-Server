@@ -34,8 +34,7 @@ const mockReturnedHolderApp = {
 const requestUuid = uuidv4();
 
 const mockReturnedIssuer = {
-  // uuid: uuidv4(),
-  uuid: '7417ac8a-e179-429a-aadc-326e69bd155d',
+  uuid: uuidv4(),
   createdAt: now,
   updatedAt: now,
   did: `did:unum:${uuidv4()}`,
