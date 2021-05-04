@@ -35,7 +35,14 @@ export class PresentationServiceV2 {
 
     const presentationRequestService = this.app.service('presentationRequest');
     const presentationWebsocketService = this.app.service('presentationWebsocket');
-    const presentationRequest = await presentationRequestService.get(presentationRequestUuid);
+    let presentationRequest;
+    try {
+      presentationRequest = await presentationRequestService.get(presentationRequestUuid, params);
+    } catch (e) {
+      logger.error(`error grabbing request ${e}`);
+      throw e;
+    }
+
     const verifier = await presentationRequest._verifier.init();
     const verifierService = this.app.service('verifier');
     const version = params.headers?.version; // ought to be defined via the global before hook
@@ -63,6 +70,7 @@ export class PresentationServiceV2 {
 
       // return early if the presentation could not be verified
       if (!result.isVerified) {
+        logger.warn(`Presentation verification failed: ${result.message}`);
         throw new BadRequest(`Verification failed: ${result.message}`);
       }
       const decryptedPresentation: Presentation = result.presentation;
@@ -135,13 +143,16 @@ export class PresentationServiceV2 {
 
       return { isVerified: true, type: result.type, presentationReceiptInfo };
     } catch (error) {
-      logger.error(`Issue handling verifying a v2 presentation ${error.response.data ? JSON.stringify(error.response.data) : JSON.stringify(error)}`);
+      if (error instanceof BadRequest) {
+        throw error; // isVerifier is false
+      }
+
+      logger.error(`Issue handling verifying a v2 presentation ${error.response && error.response.data ? JSON.stringify(error.response.data) : JSON.stringify(error)}`);
       if (error.response) {
-        // handleIssuerVerifierWebAppError(new HttpError(error.response.status, error.response.data));
         handleIssuerVerifierWebAppError(error.response);
       }
 
-      throw new GeneralError(`Issue handling verifying a v2 presentation ${error.response.data ? error.response.data : error}`);
+      throw new GeneralError(`Issue handling verifying a v2 presentation ${error.response && error.response.data ? error.response.data : error}`);
     }
   }
 

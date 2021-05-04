@@ -12,7 +12,7 @@ import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
 import { encrypt } from '@unumid/library-crypto';
 import { Issuer } from '../../src/entities/Issuer';
-import { EncryptedPresentation, Presentation, EncryptedData, CredentialSubject, PresentationRequestDto, PresentationRequest } from '@unumid/types';
+import { EncryptedPresentation, Presentation, EncryptedData, CredentialSubject, PresentationRequestDto, PresentationRequest, PresentationRequestPostDto } from '@unumid/types';
 
 const now = new Date();
 
@@ -34,7 +34,8 @@ const mockReturnedHolderApp = {
 const requestUuid = uuidv4();
 
 const mockReturnedIssuer = {
-  uuid: uuidv4(),
+  // uuid: uuidv4(),
+  uuid: '7417ac8a-e179-429a-aadc-326e69bd155d',
   createdAt: now,
   updatedAt: now,
   did: `did:unum:${uuidv4()}`,
@@ -101,7 +102,7 @@ const mockReturnedRequest: PresentationRequest = {
   holderAppUuid: mockReturnedHolderApp.uuid
 };
 
-const mockPresentationRequestResponse: PresentationRequestDto = {
+const mockPresentationRequestResponse = {
   presentationRequest: mockReturnedRequest,
   verifier: {
     name: 'ACME, Inc. Verifier',
@@ -112,9 +113,9 @@ const mockPresentationRequestResponse: PresentationRequestDto = {
       name: mockReturnedIssuer.name,
       did: mockReturnedIssuer.did
     }
-  }
-  // deeplink: `acme:///unumid/presentationRequest/${requestUuid}`,
-  // qrCode: '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'
+  },
+  deeplink: `acme:///unumid/presentationRequest/${requestUuid}`,
+  qrCode: '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'
 };
 
 jest.mock('axios');
@@ -289,7 +290,7 @@ describe('PresentationServiceV2', () => {
 
     describe('post', () => {
       it('sends the presentation to the verifier app for verification', async () => {
-        await supertest(app).post('/presentationV2').send(encryptedPresentation);
+        await supertest(app).post('/presentationV2').send(encryptedPresentation).set({ version: '2.0.0' });
         const expectedData = {
           encryptedPresentation: encryptedPresentationData,
           verifier: verifier.did,
@@ -314,7 +315,7 @@ describe('PresentationServiceV2', () => {
         };
 
         (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentationV2').send(encryptedPresentation);
+        const response = await supertest(app).post('/presentationV2').send(encryptedPresentation).set({ version: '2.0.0' });
         const expected = {
           isVerified: true,
           type: 'VerifiablePresentation',
@@ -328,9 +329,9 @@ describe('PresentationServiceV2', () => {
                 did: issuer.did,
                 name: issuer.name
               }
-            }
-          },
-          presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid
+            },
+            presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid
+          }
         };
         expect(response.body).toEqual(expected);
       });
@@ -346,7 +347,7 @@ describe('PresentationServiceV2', () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
         await supertest(app).post('/presentationV2').send(encryptedPresentation);
 
-        const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send();
+        const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send().set({ version: '2.0.0' });
 
         expect(sharedCredentialsResponse.body.length).toEqual(1);
 
@@ -412,9 +413,9 @@ describe('PresentationServiceV2', () => {
           };
         });
 
-        it('returns a success response if the NoPresentation is valid', async () => {
+        it('returns a success response if the DeclinedPresentation is valid', async () => {
           const verifyReturnValue = {
-            type: ['NoPresentation'],
+            type: ['DeclinedPresentation'],
             subject: declinedPresentation.proof.verificationMethod,
             isVerified: true,
             presentation
@@ -422,31 +423,31 @@ describe('PresentationServiceV2', () => {
 
           const expected = {
             isVerified: true,
-            type: ['NoPresentation'],
+            type: ['DeclinedPresentation'],
             presentationReceiptInfo: {
               subjectDid: declinedPresentation.proof.verificationMethod.split('#')[0],
               verifierDid: verifier.did,
               holderApp: holderApp.uuid,
-              credentialTypes: ['TestCredential']
-            },
-            presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid
+              credentialTypes: ['TestCredential'],
+              presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid
+            }
           };
 
           (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
-          const response = await supertest(app).post('/presentationV2').send(encryptedDeclinedPresentation);
+          const response = await supertest(app).post('/presentationV2').send(encryptedDeclinedPresentation).set({ version: '2.0.0' });
           expect(response.body).toEqual(expected);
         });
 
-        it('returns a 400 status code if the NoPresentation is not verified', async () => {
+        it('returns a 400 status code if the DeclinedPresentation is not verified', async () => {
           (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
-          const response = await supertest(app).post('/presentationV2').send(encryptedDeclinedPresentation);
+          const response = await supertest(app).post('/presentationV2').send(encryptedDeclinedPresentation).set({ version: '2.0.0' });
           expect(response.status).toEqual(400);
         });
       });
 
       it('returns 400 status code if the Presentation is not verified', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentationV2').send(encryptedPresentation);
+        const response = await supertest(app).post('/presentationV2').send(encryptedPresentation).set({ version: '2.0.0' });
         expect(response.status).toEqual(400);
       });
     });
