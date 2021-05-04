@@ -50,7 +50,6 @@ export class PresentationService {
 
     // Needed to roll over the old attribute value that wasn't storing the Bearer as part of the token. Ought to remove once the roll over is complete. Figured simple to enough to just handle in app code.
     const authToken = verifier.authToken.startsWith('Bearer ') ? verifier.authToken : `Bearer ${verifier.authToken}`;
-    // const headers = { Authorization: `${authToken}`, version: presentation.version };
     const headers = { Authorization: `${authToken}`, version };
 
     if (lt(version, '2.0.0')) {
@@ -129,13 +128,6 @@ export class PresentationService {
 
       return { isVerified: true, type: result.type, presentationReceiptInfo, presentationRequestUuid: presentationRequestInfo.presentationRequest.uuid };
     } else {
-      // request was made with version header 2.0.0+, use the v2 service
-      // const newParams = {
-      //   ...params,
-      //   headers: { ...params?.headers, version: presentation.version }
-      // };
-
-      // return await presentationServiceV2.create(presentation, newParams);
       return await presentationServiceV2.create(presentation, params);
     }
   }
@@ -144,36 +136,6 @@ export class PresentationService {
     this.app = app;
   }
 }
-
-// function handleVersion (ctx: HookContext): void {
-//   let { params, data } = ctx;
-//   if (params.headers?.version) {
-//     if (!valid(params.headers.version)) {
-//       logger.error(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
-//       throw new BadRequest(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
-//     }
-//     data.version = params.headers.version; // adding to input data
-//   } else {
-//     // Actually going to allow request without version headers for backwards compatibility
-//     // logger.error('Request made without a version header.');
-//     // throw new BadRequest('Version header is required.');
-//     if (data) {
-//       data.version = '1.0.0'; // base version
-//     } else {
-//       data = { version: '1.0.0' };
-//     }
-//   }
-
-//   logger.info(`Request made with version ${data.version}`);
-// }
-
-// export const hooks = {
-//   before: {
-//     create: [
-//       handleVersion
-//     ]
-//   }
-// };
 
 declare module '../declarations' {
   interface ServiceTypes {

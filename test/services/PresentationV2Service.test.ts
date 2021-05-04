@@ -12,7 +12,7 @@ import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
 import { encrypt } from '@unumid/library-crypto';
 import { Issuer } from '../../src/entities/Issuer';
-import { EncryptedPresentation, Presentation, EncryptedData, CredentialSubject, PresentationRequestDto, PresentationRequest, PresentationRequestPostDto } from '@unumid/types';
+import { EncryptedPresentation, Presentation, EncryptedData, CredentialSubject, PresentationRequest } from '@unumid/types';
 
 const now = new Date();
 
@@ -72,23 +72,11 @@ const mockReturnedRequest: PresentationRequest = {
   updatedAt: now,
   expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
   verifier: mockReturnedVerifier.did,
-  // verifier: {
-  //   name: 'ACME, Inc. Verifier',
-  //   did: mockReturnedVerifier.did,
-  //   url: `${config.BASE_URL}/presentation?verifier=${mockReturnedVerifier.uuid}`
-  // },
   credentialRequests: [
     {
       type: 'TestCredential',
       required: true,
       issuers: [mockReturnedIssuer.did]
-      // issuers: [
-      //   {
-      //     did: mockReturnedIssuer.did,
-      //     name: 'ACME Inc. TEST Issuer',
-      //     required: true
-      //   }
-      // ]
     }
   ],
   proof: {
@@ -268,14 +256,6 @@ describe('PresentationServiceV2', () => {
         mm8BsTr/8GQSVyDC8z9yLUw75odNLqF54wIDAQAB
         -----END RSA PUBLIC KEY-----`;
 
-      // const dummyPresentationRequestInfo = mockPresentationRequestResponse;
-
-      // export const dummyEncryptedPresentationData = encrypt(dummyVerifierDid, rsaPublicKeyPem, dummyPresentation, 'pem');
-      // export const dummyEncryptedPresentation = {
-      //   presentationRequestInfo: dummyPresentationRequestInfo,
-      //   encryptedPresentation: dummyEncryptedPresentationData
-      // };
-
       encryptedPresentationData = encrypt(mockReturnedVerifier.did, dummyRsaPublicKey1, presentation, 'pem');
       encryptedPresentation = {
         // presentationRequestUuid: presentation.presentationRequestUuid,
@@ -309,8 +289,6 @@ describe('PresentationServiceV2', () => {
           type: 'VerifiablePresentation',
           subject: presentation.proof.verificationMethod,
           isVerified: true,
-          // credentialTypes: ['VerifiableCredential', 'TestCredential'],
-          // credentials: presentation.verifiableCredential,
           presentation
         };
 
@@ -407,7 +385,6 @@ describe('PresentationServiceV2', () => {
 
           encryptedDeclinedPresentationData = encrypt(mockReturnedVerifier.did, dummyRsaPublicKey1, declinedPresentation, 'pem');
           encryptedDeclinedPresentation = {
-            // presentationRequestUuid: presentation.presentationRequestUuid,
             presentationRequestInfo: mockPresentationRequestResponse,
             encryptedPresentation: encryptedDeclinedPresentationData
           };

@@ -13,37 +13,17 @@ function logRequest (ctx: HookContext): void {
 }
 
 function handleVersion (ctx: HookContext): void {
-  let { params, data } = ctx;
+  let { params } = ctx;
   if (params.headers?.version) {
     if (!valid(params.headers.version)) {
       logger.error(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
       throw new BadRequest(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
     }
-    // data.version = params.headers.version; // adding to input data
   } else {
-    // Actually going to allow request without version headers for backwards compatibility
-    // logger.error('Request made without a version header.');
-    // throw new BadRequest('Version header is required.');
-    // if (data) {
-    //   data.version = '1.0.0'; // base version
-    //   // params = {
-    //   //   ...params,
-    //   //   headers: {
-    //   //     ...params.headers,
-    //   //     version: '1.0.0'
-    //   //   }
-    //   // };
-
-    //   // params.headers.version = '1.0.0';
-    // } else {
-    //   data = { version: '1.0.0' };
-    // }
-
-    params = updateVersionHeaderParam(params, '1.0.0');
+    params = updateVersionHeaderParam(params, '1.0.0'); // default version
   }
 
   ctx.params = params;
-  // ctx.data = data;
 
   logger.info(`Request made with version ${params.headers?.version}`);
 }
@@ -78,7 +58,6 @@ function logError (ctx: HookContext): void {
 export default {
   before: {
     all: [logRequest, handleVersion],
-    // all: [logRequest],
     find: [],
     get: [],
     create: [],
