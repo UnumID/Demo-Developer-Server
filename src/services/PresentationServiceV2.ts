@@ -10,7 +10,7 @@ import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
 import { EncryptedPresentation, PresentationReceiptInfo, VerificationResponse, Credential } from '@unumid/types';
 import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo, convertCredentialSubject } from '@unumid/server-sdk';
-import { DemoPresentationDto, WithVersion } from '@unumid/demo-types';
+import { DemoPresentationDto } from '@unumid/demo-types';
 import { handleIssuerVerifierWebAppError } from '../utils/errorHandler';
 
 export function publisher (app: Application) {
