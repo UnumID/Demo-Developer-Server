@@ -118,7 +118,7 @@ const mockPresentationRequestResponse = {
 jest.mock('axios');
 const mockAxiosPost = axios.post as jest.Mock;
 
-describe('PresentationServiceV2', () => {
+describe('PresentationService', () => {
   describe('initializing the service', () => {
     it('registers with the app', async () => {
       const app = await generateApp();
@@ -152,7 +152,7 @@ describe('PresentationServiceV2', () => {
     });
 
     beforeEach(async () => {
-      const companyResponse = await supertest(app).post('/company').send(companyOptions);
+      const companyResponse = await supertest(app).post('/company').send(companyOptions).set({ version: '1.0.0' });
 
       mockReturnedHeaders = {
         'x-auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoidmVyaWZpZXIiLCJ1dWlkIjoiM2VjYzVlZDMtZjdhMC00OTU4LWJjOTgtYjc5NTQxMThmODUyIiwiZGlkIjoiZGlkOnVudW06ZWVhYmU0NGItNjcxMi00NTRkLWIzMWItNTM0NTg4NTlmMTFmIiwiZXhwIjoxNTk1NDcxNTc0LjQyMiwiaWF0IjoxNTk1NTI5NTExfQ.4iJn_a8fHnVsmegdR5uIsdCjXmyZ505x1nA8NVvTEBg'
@@ -179,10 +179,10 @@ describe('PresentationServiceV2', () => {
         did: `did:unum:${uuidv4()}`
       };
 
-      const verifierResponse = await supertest(app).post('/verifier').send(verifierOptions);
-      await supertest(app).post('/user').send(userOptions);
+      const verifierResponse = await supertest(app).post('/verifier').send(verifierOptions).set({ version: '1.0.0' });
+      await supertest(app).post('/user').send(userOptions).set({ version: '1.0.0' });
 
-      const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions);
+      const issuerResponse = await supertest(app).post('/issuer').send(issuerOptions).set({ version: '1.0.0' });
 
       verifier = verifierResponse.body;
       issuer = issuerResponse.body;
@@ -194,7 +194,7 @@ describe('PresentationServiceV2', () => {
         apiKey: 'J6A5J3FEJXi+2Xh6JUWpXl5+318dfi1kcwxnMMQKrfc='
       };
 
-      const holderAppResponse = await supertest(app).post('/holderApp').send(holderAppOptions);
+      const holderAppResponse = await supertest(app).post('/holderApp').send(holderAppOptions).set({ version: '1.0.0' });
       holderApp = holderAppResponse.body;
 
       const presentationRequestOptions = {
@@ -204,7 +204,7 @@ describe('PresentationServiceV2', () => {
         holderAppUuid: holderApp.uuid
       };
 
-      const presentationRequestResponse = await supertest(app).post('/presentationRequest').send(presentationRequestOptions);
+      const presentationRequestResponse = await supertest(app).post('/presentationRequest').send(presentationRequestOptions).set({ version: '1.0.0' });
 
       presentation = {
         '@context': [
@@ -283,7 +283,7 @@ describe('PresentationServiceV2', () => {
 
     describe('post', () => {
       it('sends the presentation to the verifier app for verification', async () => {
-        await supertest(app).post('/presentation').send(encryptedPresentation);
+        await supertest(app).post('/presentation').send(encryptedPresentation).set({ version: '1.0.0' });
         const expectedData = {
           encryptedPresentation: encryptedPresentationData,
           verifier: verifier.did,
@@ -308,7 +308,7 @@ describe('PresentationServiceV2', () => {
         };
 
         (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentation').send(encryptedPresentation);
+        const response = await supertest(app).post('/presentation').send(encryptedPresentation).set({ version: '1.0.0' });
         const expected = {
           isVerified: true,
           type: 'VerifiablePresentation',
@@ -338,9 +338,9 @@ describe('PresentationServiceV2', () => {
         };
 
         (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
-        await supertest(app).post('/presentation').send(encryptedPresentation);
+        await supertest(app).post('/presentation').send(encryptedPresentation).set({ version: '1.0.0' });
 
-        const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send();
+        const sharedCredentialsResponse = await supertest(app).get('/sharedCredential').send().set({ version: '1.0.0' });
 
         expect(sharedCredentialsResponse.body.length).toEqual(1);
 
@@ -424,20 +424,20 @@ describe('PresentationServiceV2', () => {
           };
 
           (axios.post as jest.Mock).mockReturnValueOnce({ data: verifyReturnValue, headers: mockReturnedHeaders });
-          const response = await supertest(app).post('/presentation').send(encryptedNoPresentation);
+          const response = await supertest(app).post('/presentation').send(encryptedNoPresentation).set({ version: '1.0.0' });
           expect(response.body).toEqual(expected);
         });
 
         it('returns a 400 status code if the NoPresentation is not verified', async () => {
           (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
-          const response = await supertest(app).post('/presentation').send(encryptedNoPresentation);
+          const response = await supertest(app).post('/presentation').send(encryptedNoPresentation).set({ version: '1.0.0' });
           expect(response.status).toEqual(400);
         });
       });
 
       it('returns 400 status code if the Presentation is not verified', async () => {
         (axios.post as jest.Mock).mockReturnValueOnce({ data: { isVerified: false }, headers: mockReturnedHeaders });
-        const response = await supertest(app).post('/presentation').send(encryptedPresentation);
+        const response = await supertest(app).post('/presentation').send(encryptedPresentation).set({ version: '1.0.0' });
         expect(response.status).toEqual(400);
       });
     });
