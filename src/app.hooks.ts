@@ -20,7 +20,8 @@ function handleVersion (ctx: HookContext): void {
       throw new BadRequest(`Request made with a version header not in valid semver syntax, ${params.headers.version}`);
     }
   } else {
-    params = updateVersionHeaderParam(params, '2.0.0'); // default version
+    logger.debug('setting version header to the default value of 3.0.0');
+    params = updateVersionHeaderParam(params, '3.0.0'); // default version
   }
 
   ctx.params = params;
