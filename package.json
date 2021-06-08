@@ -54,7 +54,7 @@
     "@unumid/demo-types": "git+ssh://git@github.com/UnumID/demo-types#v2.1.1",
     "@unumid/demo-types-deprecated-v1": "git+ssh://git@github.com/UnumID/demo-types.git#v0.5.0",
     "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#2.1.1",
-    "@unumid/server-sdk-deprecated": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#1.4.0",
+    "@unumid/server-sdk-deprecated-v1": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#1.4.0",
     "@unumid/types": "https://github.com/UnumID/types.git#2.1.2",
     "@unumid/types-deprecated": "https://github.com/UnumID/types.git#1.4.1",
     "compression": "^1.7.4",
