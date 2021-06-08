@@ -5,7 +5,7 @@ import {
   Proof,
   VerifierInfo,
   IssuerInfoMap
-} from '@unumid/types';
+} from '@unumid/types-deprecated-v2';
 import { Verifier } from './Verifier';
 import { HolderApp } from './HolderApp';
 

@@ -12,7 +12,7 @@ import { valid } from 'semver';
 import { EncryptedPresentation, NoPresentation, PresentationReceiptInfo } from '@unumid/types-deprecated-v1';
 import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk-deprecated-v1';
 import { DemoNoPresentationDto, DemoPresentationDto, VerificationResponse as VerificationResponseDeprecated } from '@unumid/demo-types-deprecated-v1';
-import { VerificationResponse } from '@unumid/types';
+import { VerificationResponse } from '@unumid/types-deprecated-v2';
 
 import { lt } from 'lodash';
 
