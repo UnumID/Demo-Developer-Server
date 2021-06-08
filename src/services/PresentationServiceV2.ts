@@ -9,7 +9,7 @@ import logger from '../logger';
 import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
 import { EncryptedPresentation, PresentationReceiptInfo, VerificationResponse, Credential } from '@unumid/types';
-import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo, convertCredentialSubject } from '@unumid/server-sdk';
+import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo, convertCredentialSubject } from '@unumid/server-sdk-deprecated-v2';
 import { DemoPresentationDto } from '@unumid/demo-types-deprecated-v2';
 import { handleIssuerVerifierWebAppError } from '../utils/errorHandler';
 

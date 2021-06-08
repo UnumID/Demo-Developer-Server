@@ -1,5 +1,5 @@
 import { BadRequest } from '@feathersjs/errors';
-import { CustError } from '@unumid/server-sdk';
+import { CustError } from '@unumid/server-sdk-deprecated-v2';
 
 export const handleError = (error: CustError): void => {
   if (error.code === 400 && error.message) {
