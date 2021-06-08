@@ -200,7 +200,7 @@ describe('PresentationRequest service', () => {
           }],
           eccPrivateKey: mockReturnedVerifier.keys.signing.privateKey,
           holderAppUuid: holderApp.uuid,
-          metadata: { userUuid: user.uuid }
+          metadata: { fields: { userUuid: user.uuid } }
         };
         expect((axios.post as jest.Mock).mock.calls[3][1]).toEqual(expected);
       });
