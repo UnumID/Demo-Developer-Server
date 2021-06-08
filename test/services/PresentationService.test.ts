@@ -12,7 +12,7 @@ import { resetDb } from '../resetDb';
 import { HolderApp } from '../../src/entities/HolderApp';
 import { encrypt } from '@unumid/library-crypto';
 import { Issuer } from '../../src/entities/Issuer';
-import { EncryptedPresentation, Presentation, NoPresentation, EncryptedData } from '@unumid/types-deprecated';
+import { EncryptedPresentation, Presentation, NoPresentation, EncryptedData } from '@unumid/types-deprecated-v1';
 
 const now = new Date();
 

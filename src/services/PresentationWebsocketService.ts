@@ -1,7 +1,7 @@
 import { Params, ServiceAddons } from '@feathersjs/feathers';
 
 import { Application } from '../declarations';
-import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-deprecated';
+import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-deprecated-v1';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { Presentation } from '@unumid/server-sdk-deprecated-v1';
 import { DemoNoPresentationDto as DemoNoPresentationDtoDeprecated, DemoPresentationDto as DemoPresentationDtoDeprecated } from '@unumid/demo-types-deprecated-v1';

@@ -56,7 +56,7 @@
     "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#2.1.1",
     "@unumid/server-sdk-deprecated-v1": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#1.4.0",
     "@unumid/types": "https://github.com/UnumID/types.git#2.1.2",
-    "@unumid/types-deprecated": "https://github.com/UnumID/types.git#1.4.1",
+    "@unumid/types-deprecated-v1": "https://github.com/UnumID/types.git#1.4.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dedent": "^0.7.0",
