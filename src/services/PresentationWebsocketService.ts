@@ -4,7 +4,7 @@ import { Application } from '../declarations';
 import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-deprecated';
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { Presentation } from '@unumid/server-sdk-deprecated';
-import { DemoNoPresentationDto as DemoNoPresentationDtoDeprecated, DemoPresentationDto as DemoPresentationDtoDeprecated } from '@unumid/demo-types-deprecated';
+import { DemoNoPresentationDto as DemoNoPresentationDtoDeprecated, DemoPresentationDto as DemoPresentationDtoDeprecated } from '@unumid/demo-types-deprecated-v1';
 import { DemoPresentationDto } from '@unumid/demo-types';
 
 export interface VerificationPresentationResponse {

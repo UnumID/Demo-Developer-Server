@@ -11,7 +11,7 @@ import { valid } from 'semver';
 
 import { EncryptedPresentation, NoPresentation, PresentationReceiptInfo } from '@unumid/types-deprecated';
 import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo } from '@unumid/server-sdk-deprecated';
-import { DemoNoPresentationDto, DemoPresentationDto, VerificationResponse as VerificationResponseDeprecated } from '@unumid/demo-types-deprecated';
+import { DemoNoPresentationDto, DemoPresentationDto, VerificationResponse as VerificationResponseDeprecated } from '@unumid/demo-types-deprecated-v1';
 import { VerificationResponse } from '@unumid/types';
 
 import { lt } from 'lodash';
