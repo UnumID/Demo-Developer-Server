@@ -5,7 +5,7 @@ import { PresentationOrNoPresentation, NoPresentation } from '@unumid/types-depr
 import { Channel } from '@feathersjs/transport-commons/lib/channels/channel/base';
 import { Presentation } from '@unumid/server-sdk-deprecated-v1';
 import { DemoNoPresentationDto as DemoNoPresentationDtoDeprecated, DemoPresentationDto as DemoPresentationDtoDeprecated } from '@unumid/demo-types-deprecated-v1';
-import { DemoPresentationDto } from '@unumid/demo-types';
+import { DemoPresentationDto } from '@unumid/demo-types-deprecated-v2';
 
 export interface VerificationPresentationResponse {
   isVerified: boolean;
