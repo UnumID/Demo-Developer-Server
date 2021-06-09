@@ -36,7 +36,7 @@ export async function sendRequest (ctx: HookContext): Promise<HookContext> {
     eccPrivateKey: verifier.privateKey,
     holderAppUuid: data.holderAppUuid,
     metadata: {
-      userUuid: data.userUuid
+      fields: { userUuid: data.userUuid }
     }
   };
 
