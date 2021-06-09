@@ -8,8 +8,8 @@ import { config } from '../config';
 import logger from '../logger';
 import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
-import { EncryptedPresentation, PresentationReceiptInfo, VerificationResponse, Credential, PresentationPb } from '@unumid/types';
-import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo, convertCredentialSubject, verifyPresentation } from '@unumid/server-sdk';
+import { EncryptedPresentation, PresentationReceiptInfo, VerificationResponse, Credential, PresentationPb, CredentialPb } from '@unumid/types';
+import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo, convertCredentialSubject } from '@unumid/server-sdk';
 import { DemoPresentationDto } from '@unumid/demo-types';
 import { handleIssuerVerifierWebAppError } from '../utils/errorHandler';
 
@@ -59,14 +59,11 @@ export class PresentationServiceV3 {
       // forward request to verifier
       const response = await axios.post(url, { encryptedPresentation, verifier: verifier.did, encryptionPrivateKey: verifier.encryptionPrivateKey }, { headers });
       const result: DecryptedPresentation = response.data;
-      //   const response = await verifyPresentation(authToken, encryptedPresentation, verifier.did, verifier.encryptionPrivateKey);
-      //   const result: DecryptedPresentation = response.body;
 
       logger.info(`response from verifier app ${result}`);
 
       // update the verifier's auth token if it was reissued
       const authTokenResponse = response.headers['x-auth-token'];
-      //   const authTokenResponse = response.authToken;
       if (authTokenResponse !== verifier.authToken) {
         await verifierService.patch(verifier.uuid, { authToken: authTokenResponse });
       }
@@ -76,15 +73,15 @@ export class PresentationServiceV3 {
         logger.warn(`Presentation verification failed: ${result.message}`);
         throw new BadRequest(`Verification failed: ${result.message}`);
       }
-      const decryptedPresentation: Presentation = result.presentation as Presentation;
+      const decryptedPresentation: PresentationPb = result.presentation as PresentationPb;
 
-      if (result.type === 'VerifiablePresentation' && isArrayNotEmpty((decryptedPresentation as Presentation).verifiableCredential)) {
+      if (result.type === 'VerifiablePresentation' && isArrayNotEmpty(decryptedPresentation.verifiableCredential)) {
       // save shared credentials
         const sharedCredentialService = this.app.service('sharedCredential');
         const issuerService = this.app.service('issuer');
         const userService = this.app.service('user');
 
-        for (const credential of (decryptedPresentation.verifiableCredential as Credential[])) {
+        for (const credential of (decryptedPresentation.verifiableCredential as CredentialPb[])) {
         // get saved issuer and user by their dids
         // note that the saved dids will not include key identifier fragments, which may be included in the credential
           const issuer = await issuerService.get(null, { where: { did: credential.issuer.split('#')[0] } });
@@ -106,34 +103,15 @@ export class PresentationServiceV3 {
       // Handle passing to the presentation websokcet service for web client consuming the plaintext presentation, which should not be returned to UnumID's saas.
       const demoVerification: DemoPresentationDto = {
         isVerified: true,
-        presentation: decryptedPresentation as Presentation,
+        presentation: decryptedPresentation as unknown as Presentation,
         uuid: '', // unused in this demo
         createdAt: new Date(), // unused in this demo
         updatedAt: new Date() // unused in this demo
       };
       await presentationWebsocketService.create(demoVerification, params);
-      // if (result.type === 'VerifiablePresentation') {
-      //   const demoVerification: DemoPresentationDto = {
-      //     isVerified: true,
-      //     presentation: decryptedPresentation as Presentation,
-      //     uuid: '', // unused in this demo
-      //     createdAt: new Date(), // unused in this demo
-      //     updatedAt: new Date() // unused in this demo
-      //   };
-      //   await presentationWebsocketService.create(demoVerification);
-      // } else {
-      //   const demoVerification: DemoNoPresentationDto = {
-      //     isVerified: true,
-      //     noPresentation: decryptedPresentation as NoPresentation,
-      //     uuid: '', // unused in this demo
-      //     createdAt: new Date(), // unused in this demo
-      //     updatedAt: new Date() // unused in this demo
-      //   };
-      //   await presentationWebsocketService.create(demoVerification);
-      // }
 
       // extract the relevant credential info to send back to UnumID's SaaS for analytics.
-      const credentialInfo: CredentialInfo = extractCredentialInfo(decryptedPresentation as Presentation);
+      const credentialInfo: CredentialInfo = extractCredentialInfo(decryptedPresentation as PresentationPb);
 
       const presentationReceiptInfo: PresentationReceiptInfo = {
         subjectDid: credentialInfo.subjectDid,
