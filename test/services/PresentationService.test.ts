@@ -32,6 +32,7 @@ const mockReturnedHolderApp = {
 };
 
 const requestUuid = uuidv4();
+const requestId = uuidv4();
 
 const mockReturnedIssuer = {
   uuid: uuidv4(),
@@ -67,6 +68,7 @@ const mockReturnedVerifier = {
 
 const mockReturnedRequest = {
   uuid: requestUuid,
+  id: requestId,
   createdAt: now,
   updatedAt: now,
   expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
