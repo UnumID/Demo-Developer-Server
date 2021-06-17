@@ -13,16 +13,6 @@ import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialI
 import { DemoPresentationDto } from '@unumid/demo-types-deprecated-v2';
 import { handleIssuerVerifierWebAppError } from '../utils/errorHandler';
 
-export function publisher (app: Application) {
-  return async function actualPublisher (response: any): Promise<Channel> {
-    console.log('response', response);
-    const presentationRequestService = app.service('presentationRequest');
-    const presentationRequest = await presentationRequestService.get(response.data.presentationRequestUuid);
-    const { userUuid } = presentationRequest.metadata;
-    return app.channel(userUuid);
-  };
-}
-
 /**
  * This service handles encrypted presentations from the saas where v1 handle plain text presentation from the holder sdk.
  */
@@ -31,13 +21,13 @@ export class PresentationServiceV2 {
 
   async create (presentation: EncryptedPresentation, params: Params): Promise<VerificationResponse> {
     const { presentationRequestInfo, encryptedPresentation } = presentation;
-    const presentationRequestUuid = presentationRequestInfo.presentationRequest.uuid;
+    const presentationRequestId = presentationRequestInfo.presentationRequest.id;
 
     const presentationRequestService = this.app.service('presentationRequest');
     const presentationWebsocketService = this.app.service('presentationWebsocket');
     let presentationRequest;
     try {
-      presentationRequest = await presentationRequestService.get(presentationRequestUuid, params);
+      presentationRequest = await presentationRequestService.get(null, { where: { id: presentationRequestId } });
     } catch (e) {
       logger.error(`error grabbing request ${e}`);
       throw e;
@@ -109,25 +99,6 @@ export class PresentationServiceV2 {
         updatedAt: new Date() // unused in this demo
       };
       await presentationWebsocketService.create(demoVerification, params);
-      // if (result.type === 'VerifiablePresentation') {
-      //   const demoVerification: DemoPresentationDto = {
-      //     isVerified: true,
-      //     presentation: decryptedPresentation as Presentation,
-      //     uuid: '', // unused in this demo
-      //     createdAt: new Date(), // unused in this demo
-      //     updatedAt: new Date() // unused in this demo
-      //   };
-      //   await presentationWebsocketService.create(demoVerification);
-      // } else {
-      //   const demoVerification: DemoNoPresentationDto = {
-      //     isVerified: true,
-      //     noPresentation: decryptedPresentation as NoPresentation,
-      //     uuid: '', // unused in this demo
-      //     createdAt: new Date(), // unused in this demo
-      //     updatedAt: new Date() // unused in this demo
-      //   };
-      //   await presentationWebsocketService.create(demoVerification);
-      // }
 
       // extract the relevant credential info to send back to UnumID's SaaS for analytics.
       const credentialInfo: CredentialInfo = extractCredentialInfo(decryptedPresentation as Presentation);
@@ -170,5 +141,4 @@ declare module '../declarations' {
 export default function (app: Application): void {
   app.use('/presentationV2', new PresentationServiceV2());
   const service = app.service('presentationV2');
-  service.publish(publisher(app));
 }
