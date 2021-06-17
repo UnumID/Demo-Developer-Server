@@ -130,8 +130,11 @@ describe('PresentationRequest service', () => {
         await supertest(app).post('/userAuthentication').send({ strategy: 'user', username: 'test-user-123' });
 
         const requestUuid = uuidv4();
+        const requestId = uuidv4();
+
         const mockReturnedRequest = {
           uuid: requestUuid,
+          id: requestId,
           createdAt: now,
           updatedAt: now,
           expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
