@@ -49,8 +49,9 @@ const logTransports = config.NODE_ENV === 'local'
     new transports.Console({
       level: config.LOG_LEVEL || 'debug',
       format: consoleFormat
-    }),
-    new Syslog(options)
+    })
+    // ,
+    // new Syslog(options)
   ];
 
 // Configure the Winston logger. For the complete documentation see https://github.com/winstonjs/winston

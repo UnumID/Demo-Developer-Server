@@ -31,13 +31,13 @@ export class PresentationServiceV2 {
 
   async create (presentation: EncryptedPresentation, params: Params): Promise<VerificationResponse> {
     const { presentationRequestInfo, encryptedPresentation } = presentation;
-    const presentationRequestUuid = presentationRequestInfo.presentationRequest.uuid;
+    const presentationRequestId = presentationRequestInfo.presentationRequest.id;
 
     const presentationRequestService = this.app.service('presentationRequest');
     const presentationWebsocketService = this.app.service('presentationWebsocket');
     let presentationRequest;
     try {
-      presentationRequest = await presentationRequestService.get(presentationRequestUuid, params);
+      presentationRequest = await presentationRequestService.get(null, { where: { id: presentationRequestId } });
     } catch (e) {
       logger.error(`error grabbing request ${e}`);
       throw e;

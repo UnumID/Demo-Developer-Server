@@ -16,6 +16,7 @@ export interface CredentialRequest {
 }
 
 export interface PresentationRequestOptions extends BaseEntityOptions {
+  id: string; // identifier for related requests between versions.
   verifier: Verifier;
   credentialRequests: CredentialRequest[];
   proof: Proof;
@@ -34,6 +35,9 @@ export class PresentationRequest extends BaseEntity {
   get verifier (): string {
     return this._verifier.did;
   }
+
+  @Property()
+  id!: string; // An identifier to tie related entities across versions
 
   @Property()
   credentialRequests: CredentialRequest[];
@@ -78,5 +82,6 @@ export class PresentationRequest extends BaseEntity {
     this.deeplink = options.deeplink;
     this.qrCode = options.qrCode;
     this.data = options.data;
+    this.id = options.id;
   }
 }
