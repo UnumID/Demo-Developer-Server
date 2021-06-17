@@ -128,6 +128,7 @@ describe('PresentationServiceV2', () => {
     let holderApp: HolderApp;
     let mockReturnedHeaders;
     let requestUuid;
+    let requestId;
 
     beforeAll(async () => {
       // set up app and wait until server is ready
@@ -236,7 +237,8 @@ describe('PresentationServiceV2', () => {
             }
           }
         ],
-        presentationRequestUuid: requestUuid,
+        // presentationRequestUuid: requestUuid,
+        presentationRequestId: requestId,
         proof: {
           created: '2020-09-03T18:50:52.105Z',
           signatureValue: 'iKx1CJLYue7vopUo2fqGps3TWmxqRxoBDTupumLkaNp2W3UeAjwLUf5WxLRCRkDzEFeKCgT7JdF5fqbpvqnBZoHyYzWYbmW4YQ',
@@ -349,7 +351,7 @@ describe('PresentationServiceV2', () => {
               'https://www.w3.org/2018/credentials/v1'
             ],
             type: ['VerifiablePresentation'],
-            presentationRequestUuid: requestUuid,
+            presentationRequestId: requestUuid,
             proof: {
               created: '2020-09-03T18:50:52.105Z',
               signatureValue: 'iKx1CJLYue7vopUo2fqGps3TWmxqRxoBDTupumLkaNp2W3UeAjwLUf5WxLRCRkDzEFeKCgT7JdF5fqbpvqnBZoHyYzWYbmW4YQ',

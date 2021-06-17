@@ -29,6 +29,7 @@ export function publisher (app: Application) {
 /**
  * This service handles encrypted presentations from the saas where v1 handle plain text presentation from the holder sdk.
  */
+// TODO V1 presentations is no longer support. Need to remove the now dead code.
 export class PresentationService {
   private app!: Application;
 
@@ -102,7 +103,8 @@ export class PresentationService {
           createdAt: new Date(), // unused in this demo
           updatedAt: new Date() // unused in this demo
         };
-        await presentationWebsocketService.create(demoVerification, params);
+        // V1 is no longer supported.
+        // await presentationWebsocketService.create(demoVerification, params);
       } else {
         const demoVerification: DemoNoPresentationDto = {
           isVerified: true,
@@ -111,7 +113,8 @@ export class PresentationService {
           createdAt: new Date(), // unused in this demo
           updatedAt: new Date() // unused in this demo
         };
-        await presentationWebsocketService.create(demoVerification, params);
+        // V1 is no longer supported.
+        // await presentationWebsocketService.create(demoVerification, params);
       }
 
       // extract the relevant credential info to send back to UnumID's SaaS for analytics.
