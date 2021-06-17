@@ -16,16 +16,6 @@ import { VerificationResponse } from '@unumid/types-deprecated-v2';
 
 import { lt } from 'lodash';
 
-export function publisher (app: Application) {
-  return async function actualPublisher (response: any): Promise<Channel> {
-    console.log('response', response);
-    const presentationRequestService = app.service('presentationRequest');
-    const presentationRequest = await presentationRequestService.get(response.data.presentationRequestUuid);
-    const { userUuid } = presentationRequest.metadata;
-    return app.channel(userUuid);
-  };
-}
-
 /**
  * This service handles encrypted presentations from the saas where v1 handle plain text presentation from the holder sdk.
  */
@@ -152,5 +142,4 @@ declare module '../declarations' {
 export default function (app: Application): void {
   app.use('/presentation', new PresentationService());
   const service = app.service('presentation');
-  service.publish(publisher(app));
 }

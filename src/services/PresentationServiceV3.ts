@@ -8,20 +8,10 @@ import { config } from '../config';
 import logger from '../logger';
 import { isArrayNotEmpty } from '../utils/isArrayEmpty';
 
-import { EncryptedPresentation, PresentationReceiptInfo, VerificationResponse, Credential, PresentationPb, CredentialPb } from '@unumid/types';
+import { EncryptedPresentation, PresentationReceiptInfo, VerificationResponse, PresentationPb, CredentialPb } from '@unumid/types';
 import { DecryptedPresentation, extractCredentialInfo, Presentation, CredentialInfo, convertCredentialSubject } from '@unumid/server-sdk';
 import { DemoPresentationDto } from '@unumid/demo-types';
 import { handleIssuerVerifierWebAppError } from '../utils/errorHandler';
-
-// export function publisher (app: Application) {
-//   return async function actualPublisher (response: any): Promise<Channel> {
-//     console.log('response', response);
-//     const presentationRequestService = app.service('presentationRequest');
-//     const presentationRequest = await presentationRequestService.get(response.data.presentationRequestUuid);
-//     const { userUuid } = presentationRequest.metadata;
-//     return app.channel(userUuid);
-//   };
-// }
 
 /**
  * This service handles encrypted presentations from the saas where v1 handle plain text presentation from the holder sdk.
@@ -152,5 +142,4 @@ declare module '../declarations' {
 export default function (app: Application): void {
   app.use('/presentationV3', new PresentationServiceV3());
   const service = app.service('presentationV3');
-  // service.publish(publisher(app));
 }
