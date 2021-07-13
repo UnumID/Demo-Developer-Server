@@ -8,7 +8,7 @@ import { SuccessResponse } from '../types';
 
 interface SmsOptions {
   to: string;
-  msg: string
+  deeplink: string
 }
 
 export class SmsService {
