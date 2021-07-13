@@ -4,6 +4,7 @@ orbs:
   aws-cli: circleci/aws-cli@0.1.22
   aws-eks: circleci/aws-eks@0.2.3
   kubernetes: circleci/kubernetes@0.4.0
+  slack: circleci/slack@4.4.2 # ref: https://github.com/CircleCI-Public/slack-orb, https://circleci.com/developer/orbs/orb/circleci/slack#usage-examples
 
 jobs:
   lint-and-test-job:
@@ -72,6 +73,32 @@ jobs:
             docker push << parameters.reg >>/<< parameters.repo >>:dev-latest
           name: Update container image
 
+  build-and-push-image-test:
+    executor: aws-cli/default
+    parameters:
+      reg:
+        type: string
+        default: "248606629437.dkr.ecr.us-west-2.amazonaws.com"
+      repo:
+        type: string
+    steps:
+      - checkout
+      - aws-cli/setup
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          command: |
+            echo Logging in to Amazon ECR...
+            $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+            echo Building the Docker image...
+            DOCKER_BUILDKIT=1 docker build --ssh github="$HOME/.ssh/id_rsa" -t ${CIRCLE_SHA1} .
+            docker tag ${CIRCLE_SHA1} << parameters.reg >>/<< parameters.repo >>:test-latest
+            docker tag ${CIRCLE_SHA1} << parameters.reg >>/<< parameters.repo >>:"${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+            echo Pushing the Docker image...
+            docker push << parameters.reg >>/<< parameters.repo >>:"${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+            docker push << parameters.reg >>/<< parameters.repo >>:test-latest
+          name: Update container image
+
   build-and-push-image-sandbox:
     executor: aws-cli/default
     parameters:
@@ -119,6 +146,13 @@ jobs:
           command: |
             kubectl set image deployment/<< parameters.deployment >> << parameters.deployment >>=${AWS_ECR_URL}/<< parameters.repo >>:"${CIRCLE_BRANCH}-${CIRCLE_PREVIOUS_BUILD_NUM}"
           name: Update container image
+      - slack/notify:
+          event: fail
+          mentions: '@Ray'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
 
   deploy-image-sandbox:
     parameters:
@@ -143,6 +177,13 @@ jobs:
           command: |
             kubectl set image deployment/<< parameters.deployment >> << parameters.deployment >>=${AWS_ECR_URL}/<< parameters.repo >>:"${CIRCLE_TAG}" -n << parameters.namespace >>
           name: Update container image
+      - slack/notify:
+          event: fail
+          mentions: '@Ray'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
 
 workflows:
@@ -170,6 +211,9 @@ workflows:
       - deploy-image-sandbox:
           requires:
             - build-and-push-image-sandbox
+          context: 
+            - AWS-Dev
+            - Slack-Context
           repo: test-customer-app
           deployment: demo-developer-server
           namespace: demos
@@ -187,6 +231,7 @@ workflows:
               ignore:
                 - main
                 - test-circleci
+                - sandbox
 
   build-and-deploy:
     jobs:
@@ -195,7 +240,6 @@ workflows:
             branches:
               only:
                 - main
-                - test-circleci
 
       - build-and-push-image:
           requires:
@@ -206,15 +250,47 @@ workflows:
             branches:
               only:
                 - main
-                - test-circleci
                 
       - deploy-image:
           requires:
             - build-and-push-image
+          context: 
+            - AWS-Dev
+            - Slack-Context
           repo: test-customer-app
           deployment: demo-developer-server
           filters:
             branches:
               only:
                 - main
+
+  build-and-deploy-test:
+    jobs:
+      - lint-and-test-job:
+          filters:
+            branches:
+              only:
+                - test-circleci
+
+      - build-and-push-image-test:
+          requires:
+            - lint-and-test-job
+          context: AWS-Dev
+          repo: test-customer-app
+          filters:
+            branches:
+              only:
+                - test-circleci
+
+      - deploy-image:
+          requires:
+            - build-and-push-image-test
+          context: 
+            - AWS-Dev
+            - Slack-Context
+          repo: test-customer-app
+          deployment: demo-developer-server
+          filters:
+            branches:
+              only:
                 - test-circleci
