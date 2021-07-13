@@ -145,6 +145,16 @@ jobs:
       - run:
           command: |
             kubectl set image deployment/<< parameters.deployment >> << parameters.deployment >>=${AWS_ECR_URL}/<< parameters.repo >>:"${CIRCLE_BRANCH}-${CIRCLE_PREVIOUS_BUILD_NUM}"
+
+            # Check deployment rollout status every 10 seconds (max 10 minutes) until complete.
+            # ref: https://www.jeffgeerling.com/blog/2018/updating-kubernetes-deployment-and-waiting-it-roll-out-shell-script
+            ATTEMPTS=0
+            ROLLOUT_STATUS_CMD="kubectl rollout status deployment/<< parameters.deployment >>"
+            until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
+              $ROLLOUT_STATUS_CMD
+              ATTEMPTS=$((attempts + 1))
+              sleep 10
+            done
           name: Update container image
       - slack/notify:
           event: fail
@@ -176,6 +186,16 @@ jobs:
       - run:
           command: |
             kubectl set image deployment/<< parameters.deployment >> << parameters.deployment >>=${AWS_ECR_URL}/<< parameters.repo >>:"${CIRCLE_TAG}" -n << parameters.namespace >>
+            
+            # Check deployment rollout status every 10 seconds (max 10 minutes) until complete.
+            # ref: https://www.jeffgeerling.com/blog/2018/updating-kubernetes-deployment-and-waiting-it-roll-out-shell-script
+            ATTEMPTS=0
+            ROLLOUT_STATUS_CMD="kubectl rollout status deployment/<< parameters.deployment >> -n << parameters.namespace >>"
+            until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
+              $ROLLOUT_STATUS_CMD
+              ATTEMPTS=$((attempts + 1))
+              sleep 10
+            done
           name: Update container image
       - slack/notify:
           event: fail
