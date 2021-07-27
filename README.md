@@ -1,6 +1,7 @@
-# Test-Customer
-An internal app that sort of acts as an approximation of what a customer might have
+# Developer Demo Server
+> A demo application which serves as both and [Issuer](https://docs.unum.id/terminology#issuer) and [Verifier](https://docs.unum.id/terminology#verifier). It is an interactive technical walkthrough that explains how the Unum ID platform works.
 
+Information about the Unum ID demo ecosystem can be found in our [documentation](https://docs.unum.id/#demos).
 ## API/Fucntionality
 
 ### Company
@@ -108,3 +109,10 @@ POST `/verifier` calls the Verifier Server App to register a Verifier
   url: string; // url to post Presentations to for this Verifier (/presentation endpoint)
 }
 ```
+
+## Release Instructions
+### Dev
+Just merging changes to `main` will trigger automated deployments to dev.
+
+### Sandbox
+To release version of this project to sandbox push a tag with a preceding `v`. This will trigger an automated deployment to sandbox.
