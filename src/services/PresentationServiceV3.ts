@@ -110,7 +110,8 @@ export class PresentationServiceV3 {
         verifierDid: verifier.did,
         holderApp: presentationRequest.holderApp.uuid,
         issuers: result.type === 'VerifiablePresentation' ? presentationRequest.issuers : undefined,
-        presentationRequestUuid: presentationRequestInfo.presentationRequest.uuid
+        presentationRequestUuid: presentationRequestInfo.presentationRequest.uuid,
+        presentationRequestId: presentationRequestInfo.presentationRequest.id
       };
 
       return { isVerified: true, type: result.type, presentationReceiptInfo };
