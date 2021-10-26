@@ -309,7 +309,8 @@ describe('PresentationServiceV3', () => {
                 name: issuer.name
               }
             },
-            presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid
+            presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid,
+            presentationRequestId: mockPresentationRequestResponse.presentationRequest.id
           }
         };
         expect(response.body).toEqual(expected);
@@ -407,7 +408,8 @@ describe('PresentationServiceV3', () => {
               verifierDid: verifier.did,
               holderApp: holderApp.uuid,
               credentialTypes: ['TestCredential'],
-              presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid
+              presentationRequestUuid: mockPresentationRequestResponse.presentationRequest.uuid,
+              presentationRequestId: mockPresentationRequestResponse.presentationRequest.id
             }
           };
 
