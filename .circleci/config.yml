@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.22
-  aws-eks: circleci/aws-eks@0.2.3
+  aws-eks: circleci/aws-eks@2.1.2
   kubernetes: circleci/kubernetes@0.4.0
   slack: circleci/slack@4.4.2 # ref: https://github.com/CircleCI-Public/slack-orb, https://circleci.com/developer/orbs/orb/circleci/slack#usage-examples
 
@@ -135,7 +135,8 @@ jobs:
       deployment:
         type: string
 
-    executor: aws-eks/python3
+    docker: # Referencing the python image here, see https://github.com/CircleCI-Public/aws-eks-orb/issues/52#issuecomment-1006838213
+    - image: cimg/python:3.10
     steps:
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
@@ -176,7 +177,8 @@ jobs:
       namespace:
         type: string
 
-    executor: aws-eks/python3
+    docker: # Referencing the python image here, see https://github.com/CircleCI-Public/aws-eks-orb/issues/52#issuecomment-1006838213
+    - image: cimg/python:3.10
     steps:
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
