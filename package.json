@@ -49,7 +49,7 @@
     "@feathersjs/express": "4.5.8",
     "@feathersjs/feathers": "4.5.8",
     "@feathersjs/socketio": "4.5.8",
-    "@feathersjs/transport-commons": "4.5.8",
+    "@feathersjs/transport-commons": "4.5.18",
     "@unumid/library-crypto": "https://github.com/UnumID/Library-Crypto-TypeScript.git#1.5.0",
     "@unumid/server-sdk": "git+ssh://git@github.com/UnumID/server-sdk-typescript.git#3.6.0",
     "@unumid/server-sdk-deprecated-v2": "npm:@unumid/server-sdk@2.1.5",
